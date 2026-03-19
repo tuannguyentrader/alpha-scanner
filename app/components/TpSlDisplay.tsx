@@ -15,7 +15,7 @@ interface LevelData {
   color: string
   tag?: string
   pips: string
-  distPercent: number // % from entry
+  distPercent: number
 }
 
 function buildLevels(symbol: string, mode: TradingMode): {
@@ -27,7 +27,6 @@ function buildLevels(symbol: string, mode: TradingMode): {
   rr3: string
   totalRange: number
 } {
-  // Use 'balanced' risk — price levels are risk-independent
   const sig = buildSignal(symbol, mode, 'balanced')
 
   const slDistance = Math.abs(sig.entryPrice - sig.stopLoss)
@@ -71,7 +70,6 @@ function buildLevels(symbol: string, mode: TradingMode): {
     },
   ]
 
-  // For SELL, TPs are below entry and SL above — reverse visual order
   if (sig.direction === 'SELL') {
     levels.reverse()
   }
@@ -91,108 +89,107 @@ function buildLevels(symbol: string, mode: TradingMode): {
 export default function TpSlDisplay({ symbol, mode, risk }: TpSlDisplayProps) {
   const data = buildLevels(symbol, mode)
   const isBuy = data.direction === 'BUY'
+  const dirColor = isBuy ? '#3b82f6' : '#ef4444'
 
-  // Risk % based on profile
   const riskPct = risk === 'conservative' ? 1 : risk === 'balanced' ? 2 : 5
 
   return (
     <div
-      className="rounded-lg border border-[--color-border] bg-[--color-card] p-5"
+      className="rounded-lg border border-[#222] bg-[#111] p-4 sm:p-5 transition-all duration-300 glow-teal"
       style={{ borderTopColor: '#14b8a6', borderTopWidth: '2px' }}
     >
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
           <h3 className="text-sm font-semibold text-white">TP / SL Levels</h3>
-          <p className="mt-0.5 text-xs text-gray-600">
+          <p className="mt-0.5 text-xs text-gray-600 truncate">
             Visual price levels · {symbol} · {mode.charAt(0).toUpperCase() + mode.slice(1)}
           </p>
         </div>
         <span
-          className="h-1.5 w-1.5 rounded-full"
+          className="h-2 w-2 flex-shrink-0 rounded-full mt-0.5"
           style={{ backgroundColor: '#14b8a6', boxShadow: '0 0 6px #14b8a6' }}
+          aria-hidden="true"
         />
       </div>
 
       {/* Visual price ladder */}
       <div className="mt-4">
-        <div className="relative">
-          {/* Entry price marker */}
-          <div className="mb-3 flex items-center gap-3">
-            <div className="flex-1 border-t border-dashed border-gray-600" />
-            <div className="flex items-center gap-2 rounded-md border border-gray-600 bg-[--color-card-alt] px-3 py-1.5">
-              <span className="text-[10px] uppercase tracking-widest text-gray-500">Entry</span>
-              <span className="font-mono text-sm font-bold text-white">{fmt(symbol, data.entry)}</span>
-              <span
-                className="rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wider"
+        {/* Entry price marker */}
+        <div className="mb-3 flex items-center gap-2 sm:gap-3">
+          <div className="flex-1 border-t border-dashed border-gray-700" aria-hidden="true" />
+          <div className="flex items-center gap-2 rounded-md border border-gray-700 bg-[#1a1a1a] px-2.5 py-1.5 flex-shrink-0">
+            <span className="text-[10px] uppercase tracking-widest text-gray-500">Entry</span>
+            <span className="font-mono text-sm font-bold text-white">{fmt(symbol, data.entry)}</span>
+            <span
+              className="rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wider"
+              style={{
+                backgroundColor: isBuy ? 'rgba(59,130,246,0.15)' : 'rgba(239,68,68,0.15)',
+                color: dirColor,
+              }}
+            >
+              {data.direction}
+            </span>
+          </div>
+          <div className="flex-1 border-t border-dashed border-gray-700" aria-hidden="true" />
+        </div>
+
+        {/* Level rows */}
+        <div className="space-y-2">
+          {data.levels.map((level) => (
+            <div key={level.label}>
+              <div
+                className="flex items-center justify-between rounded-md border px-3 py-2.5 transition-all duration-200 hover:brightness-110 active:scale-[0.99]"
                 style={{
-                  backgroundColor: isBuy ? 'rgba(59,130,246,0.15)' : 'rgba(239,68,68,0.15)',
-                  color: isBuy ? '#3b82f6' : '#ef4444',
+                  borderColor: `${level.color}30`,
+                  backgroundColor: `${level.color}08`,
                 }}
               >
-                {data.direction}
-              </span>
-            </div>
-            <div className="flex-1 border-t border-dashed border-gray-600" />
-          </div>
-
-          {/* Level rows */}
-          <div className="space-y-2">
-            {data.levels.map((level) => (
-              <div key={level.label} className="group relative">
-                <div
-                  className="flex items-center justify-between rounded-md border px-3 py-2.5 transition-all duration-200 hover:brightness-110"
-                  style={{
-                    borderColor: `${level.color}30`,
-                    backgroundColor: `${level.color}08`,
-                  }}
-                >
-                  {/* Left: label + tag */}
-                  <div className="flex items-center gap-2">
-                    {/* Colored dot */}
+                {/* Left: label + tag */}
+                <div className="flex items-center gap-2 min-w-0">
+                  <span
+                    className="h-2 w-2 flex-shrink-0 rounded-full"
+                    style={{ backgroundColor: level.color, boxShadow: `0 0 4px ${level.color}60` }}
+                    aria-hidden="true"
+                  />
+                  <span className="text-xs font-semibold text-gray-300 flex-shrink-0">{level.label}</span>
+                  {level.tag && (
                     <span
-                      className="h-2 w-2 rounded-full"
-                      style={{ backgroundColor: level.color, boxShadow: `0 0 4px ${level.color}60` }}
-                    />
-                    <span className="text-xs font-semibold text-gray-300">{level.label}</span>
-                    {level.tag && (
-                      <span
-                        className="rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
-                        style={{ backgroundColor: `${level.color}18`, color: level.color }}
-                      >
-                        {level.tag}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Right: price + pips */}
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-gray-600">{level.pips}</span>
-                    <span className="font-mono text-xs font-bold" style={{ color: level.color }}>
-                      {fmt(symbol, level.price)}
+                      className="hidden sm:inline rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider flex-shrink-0"
+                      style={{ backgroundColor: `${level.color}18`, color: level.color }}
+                    >
+                      {level.tag}
                     </span>
-                  </div>
+                  )}
                 </div>
 
-                {/* Distance bar */}
-                <div className="mt-1 h-0.5 overflow-hidden rounded-full bg-[--color-border]">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${Math.min(100, level.distPercent)}%`,
-                      backgroundColor: level.color,
-                      opacity: 0.6,
-                    }}
-                  />
+                {/* Right: price + pips */}
+                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-2">
+                  <span className="hidden xs:inline text-[10px] text-gray-600">{level.pips}</span>
+                  <span className="font-mono text-xs font-bold" style={{ color: level.color }}>
+                    {fmt(symbol, level.price)}
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
+
+              {/* Distance bar */}
+              <div className="mt-1 h-0.5 overflow-hidden rounded-full bg-[#222]">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${Math.min(100, level.distPercent)}%`,
+                    backgroundColor: level.color,
+                    opacity: 0.6,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Risk-Reward Summary */}
-      <div className="mt-5 rounded-md border border-[--color-border] bg-[--color-card-alt] p-3">
+      <div className="mt-5 rounded-md border border-[#222] bg-[#1a1a1a] p-3">
         <span className="mb-2 block text-[10px] uppercase tracking-widest text-gray-600">
           Risk-Reward Ratios
         </span>
@@ -204,17 +201,17 @@ export default function TpSlDisplay({ symbol, mode, risk }: TpSlDisplayProps) {
           ].map((item) => (
             <div
               key={item.label}
-              className="flex flex-col items-center rounded border border-[--color-border] bg-[--color-card] py-2"
+              className="flex flex-col items-center rounded border border-[#222] bg-[#111] py-2 transition-all duration-200 hover:border-opacity-50"
+              style={{ '--hover-border': item.color } as React.CSSProperties}
             >
               <span className="text-[10px] text-gray-600">{item.label}</span>
               <span className="font-mono text-sm font-bold" style={{ color: item.color }}>
                 1:{item.ratio}
               </span>
-              {/* Mini bar */}
-              <div className="mt-1 h-1 w-12 overflow-hidden rounded-full bg-[--color-border]">
+              <div className="mt-1 h-1 w-10 sm:w-12 overflow-hidden rounded-full bg-[#222]">
                 <div className="flex h-full">
                   <div className="h-full bg-[#ef4444]" style={{ width: `${100 / (1 + parseFloat(item.ratio))}%` }} />
-                  <div className="h-full" style={{ backgroundColor: item.color, flex: 1 }} />
+                  <div className="h-full flex-1" style={{ backgroundColor: item.color }} />
                 </div>
               </div>
             </div>
@@ -223,8 +220,8 @@ export default function TpSlDisplay({ symbol, mode, risk }: TpSlDisplayProps) {
       </div>
 
       {/* Position info footer */}
-      <div className="mt-3 flex items-center justify-between rounded-md border border-[--color-border-subtle] bg-[--color-card-alt] px-3 py-2">
-        <div className="flex items-center gap-3">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-[#333] bg-[#1a1a1a] px-3 py-2">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-gray-600">Risk</span>
             <span
@@ -236,7 +233,7 @@ export default function TpSlDisplay({ symbol, mode, risk }: TpSlDisplayProps) {
               {riskPct}%
             </span>
           </div>
-          <div className="h-3 w-px bg-[--color-border]" />
+          <div className="h-3 w-px bg-[#222]" aria-hidden="true" />
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-gray-600">Pip Value</span>
             <span className="text-[10px] font-bold text-gray-400">

@@ -66,7 +66,6 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
   }
 
   const handleTp1Change = (tp1Ratio: number) => {
-    // Auto-calculate TP2 and TP3 based on TP1
     const tp2Ratio = parseFloat((tp1Ratio * 1.618).toFixed(3))
     const tp3Ratio = parseFloat((tp1Ratio * 2.618).toFixed(3))
     onSettingsChange({ ...settings, tp1Ratio, tp2Ratio, tp3Ratio })
@@ -83,29 +82,34 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
     settings.capital === DEFAULT_SETTINGS.capital &&
     settings.tp1Ratio === DEFAULT_SETTINGS.tp1Ratio
 
-  // Position sizing calculation
   const marginUsed = settings.capital / settings.leverage
   const effectiveExposure = settings.capital
 
   return (
     <div
-      className="rounded-lg border border-[--color-border] bg-[--color-card]"
+      className="rounded-lg border border-[#222] bg-[#111]"
       style={{ borderTopColor: '#374151', borderTopWidth: '2px' }}
     >
-      {/* Header */}
+      {/* Collapsible header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex w-full items-center justify-between p-5 text-left"
+        className="flex w-full items-center justify-between p-4 sm:p-5 text-left transition-colors hover:bg-[#1a1a1a]"
+        aria-expanded={isExpanded}
+        aria-controls="settings-panel-content"
       >
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-white">Settings</h3>
-          <span className="rounded bg-[--color-card-alt] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-gray-500">
+          <span className="rounded bg-[#1a1a1a] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-gray-500">
             Config
           </span>
         </div>
         <div className="flex items-center gap-2">
           {!isDefault && (
-            <span className="h-1.5 w-1.5 rounded-full bg-[#f59e0b]" title="Modified from defaults" />
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-[#f59e0b]"
+              title="Modified from defaults"
+              aria-label="Settings modified"
+            />
           )}
           <svg
             width="12"
@@ -116,6 +120,7 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
             strokeWidth="2"
             strokeLinecap="round"
             className={`text-gray-500 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+            aria-hidden="true"
           >
             <polyline points="6 9 12 15 18 9" />
           </svg>
@@ -123,7 +128,10 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
       </button>
 
       {isExpanded && (
-        <div className="space-y-5 border-t border-[--color-border] px-5 pb-5 pt-4">
+        <div
+          id="settings-panel-content"
+          className="space-y-5 border-t border-[#222] px-4 sm:px-5 pb-5 pt-4"
+        >
           {/* Leverage */}
           <div>
             <div className="mb-2 flex items-center justify-between">
@@ -133,30 +141,28 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {LEVERAGE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => handleLeverageChange(opt.value)}
-                  className="rounded border px-2.5 py-1.5 text-[10px] font-semibold transition-all"
-                  style={{
-                    borderColor:
-                      settings.leverage === opt.value
-                        ? 'rgba(59,130,246,0.5)'
-                        : 'var(--color-border)',
-                    backgroundColor:
-                      settings.leverage === opt.value
-                        ? 'rgba(59,130,246,0.1)'
-                        : 'var(--color-card-alt)',
-                    color: settings.leverage === opt.value ? '#93c5fd' : '#6b7280',
-                  }}
-                >
-                  {opt.label}
-                </button>
-              ))}
+              {LEVERAGE_OPTIONS.map((opt) => {
+                const isActive = settings.leverage === opt.value
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => handleLeverageChange(opt.value)}
+                    className="rounded border px-2.5 py-2 text-[10px] font-semibold transition-all duration-150 active:scale-95"
+                    style={{
+                      borderColor: isActive ? 'rgba(59,130,246,0.5)' : '#222',
+                      backgroundColor: isActive ? 'rgba(59,130,246,0.1)' : '#1a1a1a',
+                      color: isActive ? '#93c5fd' : '#6b7280',
+                      boxShadow: isActive ? '0 0 8px rgba(59,130,246,0.15)' : 'none',
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                )
+              })}
             </div>
             {settings.leverage >= 500 && (
               <div className="mt-1.5 flex items-center gap-1">
-                <span className="h-1 w-1 rounded-full bg-[#f59e0b]" />
+                <span className="h-1 w-1 rounded-full bg-[#f59e0b]" aria-hidden="true" />
                 <span className="text-[9px] text-[#f59e0b]">
                   High leverage — increased risk
                 </span>
@@ -173,37 +179,30 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {CAPITAL_PRESETS.map((val) => (
-                <button
-                  key={val}
-                  onClick={() => handleCapitalChange(val)}
-                  className="rounded border px-2.5 py-1.5 text-[10px] font-semibold transition-all"
-                  style={{
-                    borderColor:
-                      settings.capital === val && !isCustomCapital
-                        ? 'rgba(20,184,166,0.5)'
-                        : 'var(--color-border)',
-                    backgroundColor:
-                      settings.capital === val && !isCustomCapital
-                        ? 'rgba(20,184,166,0.1)'
-                        : 'var(--color-card-alt)',
-                    color:
-                      settings.capital === val && !isCustomCapital ? '#5eead4' : '#6b7280',
-                  }}
-                >
-                  ${val >= 1000 ? `${val / 1000}k` : val}
-                </button>
-              ))}
+              {CAPITAL_PRESETS.map((val) => {
+                const isActive = settings.capital === val && !isCustomCapital
+                return (
+                  <button
+                    key={val}
+                    onClick={() => handleCapitalChange(val)}
+                    className="rounded border px-2.5 py-2 text-[10px] font-semibold transition-all duration-150 active:scale-95"
+                    style={{
+                      borderColor: isActive ? 'rgba(20,184,166,0.5)' : '#222',
+                      backgroundColor: isActive ? 'rgba(20,184,166,0.1)' : '#1a1a1a',
+                      color: isActive ? '#5eead4' : '#6b7280',
+                      boxShadow: isActive ? '0 0 8px rgba(20,184,166,0.15)' : 'none',
+                    }}
+                  >
+                    ${val >= 1000 ? `${val / 1000}k` : val}
+                  </button>
+                )
+              })}
               <button
                 onClick={() => setIsCustomCapital(true)}
-                className="rounded border px-2.5 py-1.5 text-[10px] font-semibold transition-all"
+                className="rounded border px-2.5 py-2 text-[10px] font-semibold transition-all duration-150 active:scale-95"
                 style={{
-                  borderColor: isCustomCapital
-                    ? 'rgba(20,184,166,0.5)'
-                    : 'var(--color-border)',
-                  backgroundColor: isCustomCapital
-                    ? 'rgba(20,184,166,0.1)'
-                    : 'var(--color-card-alt)',
+                  borderColor: isCustomCapital ? 'rgba(20,184,166,0.5)' : '#222',
+                  backgroundColor: isCustomCapital ? 'rgba(20,184,166,0.1)' : '#1a1a1a',
                   color: isCustomCapital ? '#5eead4' : '#6b7280',
                 }}
               >
@@ -213,7 +212,7 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
             {isCustomCapital && (
               <div className="mt-2 flex gap-2">
                 <div className="relative flex-1">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-gray-500">
+                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-gray-500" aria-hidden="true">
                     $
                   </span>
                   <input
@@ -222,14 +221,15 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
                     onChange={(e) => setCustomCapital(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleCustomCapitalSubmit()}
                     placeholder="Enter amount"
-                    className="w-full rounded border border-[--color-border] bg-[--color-card-alt] py-1.5 pl-6 pr-3 font-mono text-xs text-white placeholder-gray-600 outline-none focus:border-[#14b8a6]/50"
+                    className="w-full rounded border border-[#222] bg-[#1a1a1a] py-2.5 pl-6 pr-3 font-mono text-xs text-white placeholder-gray-600 outline-none focus:border-[#14b8a6]/50 transition-colors"
                     min="1"
                     autoFocus
+                    aria-label="Custom capital amount"
                   />
                 </div>
                 <button
                   onClick={handleCustomCapitalSubmit}
-                  className="rounded border border-[#14b8a6]/30 bg-[#14b8a6]/10 px-3 py-1.5 text-[10px] font-semibold text-[#5eead4] transition-colors hover:bg-[#14b8a6]/20"
+                  className="rounded border border-[#14b8a6]/30 bg-[#14b8a6]/10 px-3 py-2.5 text-[10px] font-semibold text-[#5eead4] transition-colors hover:bg-[#14b8a6]/20 active:scale-95"
                 >
                   Set
                 </button>
@@ -248,47 +248,45 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {FIBONACCI_RATIOS.map((fib) => (
-                <button
-                  key={fib.value}
-                  onClick={() => handleTp1Change(fib.value)}
-                  className="rounded border px-2.5 py-1.5 text-[10px] font-semibold transition-all"
-                  style={{
-                    borderColor:
-                      settings.tp1Ratio === fib.value
-                        ? 'rgba(139,92,246,0.5)'
-                        : 'var(--color-border)',
-                    backgroundColor:
-                      settings.tp1Ratio === fib.value
-                        ? 'rgba(139,92,246,0.1)'
-                        : 'var(--color-card-alt)',
-                    color: settings.tp1Ratio === fib.value ? '#c4b5fd' : '#6b7280',
-                  }}
-                >
-                  {fib.label}
-                </button>
-              ))}
+              {FIBONACCI_RATIOS.map((fib) => {
+                const isActive = settings.tp1Ratio === fib.value
+                return (
+                  <button
+                    key={fib.value}
+                    onClick={() => handleTp1Change(fib.value)}
+                    className="rounded border px-2.5 py-2 text-[10px] font-semibold transition-all duration-150 active:scale-95"
+                    style={{
+                      borderColor: isActive ? 'rgba(139,92,246,0.5)' : '#222',
+                      backgroundColor: isActive ? 'rgba(139,92,246,0.1)' : '#1a1a1a',
+                      color: isActive ? '#c4b5fd' : '#6b7280',
+                      boxShadow: isActive ? '0 0 8px rgba(139,92,246,0.15)' : 'none',
+                    }}
+                  >
+                    {fib.label}
+                  </button>
+                )
+              })}
             </div>
             {/* TP chain display */}
-            <div className="mt-2 flex items-center gap-3 rounded border border-[--color-border] bg-[--color-card-alt] px-3 py-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3 rounded border border-[#222] bg-[#1a1a1a] px-3 py-2">
               <div className="flex items-center gap-1.5">
-                <span className="h-1 w-1 rounded-full bg-[#14b8a6]" />
+                <span className="h-1 w-1 rounded-full bg-[#14b8a6]" aria-hidden="true" />
                 <span className="text-[9px] text-gray-500">TP1</span>
                 <span className="font-mono text-[10px] font-semibold text-[#14b8a6]">
                   {settings.tp1Ratio.toFixed(3)}
                 </span>
               </div>
-              <span className="text-[8px] text-gray-600">→</span>
+              <span className="text-[8px] text-gray-600" aria-hidden="true">→</span>
               <div className="flex items-center gap-1.5">
-                <span className="h-1 w-1 rounded-full bg-[#3b82f6]" />
+                <span className="h-1 w-1 rounded-full bg-[#3b82f6]" aria-hidden="true" />
                 <span className="text-[9px] text-gray-500">TP2</span>
                 <span className="font-mono text-[10px] font-semibold text-[#3b82f6]">
                   {settings.tp2Ratio.toFixed(3)}
                 </span>
               </div>
-              <span className="text-[8px] text-gray-600">→</span>
+              <span className="text-[8px] text-gray-600" aria-hidden="true">→</span>
               <div className="flex items-center gap-1.5">
-                <span className="h-1 w-1 rounded-full bg-[#818cf8]" />
+                <span className="h-1 w-1 rounded-full bg-[#818cf8]" aria-hidden="true" />
                 <span className="text-[9px] text-gray-500">TP3</span>
                 <span className="font-mono text-[10px] font-semibold text-[#818cf8]">
                   {settings.tp3Ratio.toFixed(3)}
@@ -298,30 +296,30 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
           </div>
 
           {/* Position Info Summary */}
-          <div className="rounded border border-[--color-border] bg-[--color-card-alt] p-3">
+          <div className="rounded border border-[#222] bg-[#1a1a1a] p-3">
             <span className="mb-2 block text-[10px] uppercase tracking-widest text-gray-600">
               Position Summary
             </span>
             <div className="grid grid-cols-2 gap-2">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span className="text-[10px] text-gray-500">Margin Used</span>
                 <span className="font-mono text-[10px] font-semibold text-gray-300">
                   ${marginUsed.toFixed(2)}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span className="text-[10px] text-gray-500">Exposure</span>
                 <span className="font-mono text-[10px] font-semibold text-gray-300">
                   ${effectiveExposure.toLocaleString()}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span className="text-[10px] text-gray-500">Leverage</span>
                 <span className="font-mono text-[10px] font-semibold text-white">
                   1:{settings.leverage.toLocaleString()}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span className="text-[10px] text-gray-500">TP Method</span>
                 <span className="font-mono text-[10px] font-semibold text-[#14b8a6]">
                   Fibonacci
@@ -334,7 +332,7 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
           {!isDefault && (
             <button
               onClick={handleReset}
-              className="flex w-full items-center justify-center gap-1.5 rounded border border-[--color-border] bg-[--color-card-alt] py-2 text-[10px] font-semibold text-gray-500 transition-colors hover:border-gray-500 hover:text-gray-300"
+              className="flex w-full items-center justify-center gap-1.5 rounded border border-[#222] bg-[#1a1a1a] py-2.5 text-[10px] font-semibold text-gray-500 transition-all hover:border-gray-500 hover:text-gray-300 active:scale-[0.99]"
             >
               <svg
                 width="10"
@@ -344,6 +342,7 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
+                aria-hidden="true"
               >
                 <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
                 <path d="M21 3v5h-5" />

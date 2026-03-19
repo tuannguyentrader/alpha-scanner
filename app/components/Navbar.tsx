@@ -4,47 +4,60 @@ import Link from 'next/link'
 
 interface NavbarProps {
   onMenuToggle: () => void
+  sidebarOpen?: boolean
 }
 
-export default function Navbar({ onMenuToggle }: NavbarProps) {
+export default function Navbar({ onMenuToggle, sidebarOpen = false }: NavbarProps) {
   return (
-    <header className="sticky top-0 z-50 h-16 border-b border-[--color-border] bg-[--color-card]">
-      <div className="flex h-full items-center justify-between px-5">
-        {/* Logo */}
-        <div className="flex items-center gap-4">
-          {/* Mobile hamburger */}
+    <header className="sticky top-0 z-50 h-16 border-b border-[#222] bg-[#111]">
+      <div className="flex h-full items-center justify-between px-4 sm:px-5">
+        {/* Logo + hamburger */}
+        <div className="flex items-center gap-3">
+          {/* Mobile hamburger — animated to X when open */}
           <button
             onClick={onMenuToggle}
-            className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-[--color-card-alt] hover:text-white md:hidden"
-            aria-label="Toggle sidebar"
+            className="btn-icon flex items-center justify-center rounded-md p-2 text-gray-400 transition-all duration-200 hover:bg-[#1a1a1a] hover:text-white active:scale-95 md:hidden"
+            aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+            aria-expanded={sidebarOpen}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
+            {sidebarOpen ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
           </button>
 
-          <Link href="/" className="flex items-center gap-2 text-white">
-            <span className="text-xl leading-none text-[--color-buy]">⚡</span>
-            <span className="font-bold tracking-tight">Alpha Scanner</span>
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-white transition-opacity hover:opacity-80"
+            aria-label="Alpha Scanner home"
+          >
+            <span className="text-xl leading-none text-[#3b82f6]" aria-hidden="true">⚡</span>
+            <span className="font-bold tracking-tight text-sm sm:text-base">Alpha Scanner</span>
           </Link>
         </div>
 
         {/* Right nav */}
-        <nav className="flex items-center gap-1">
-          <button className="hidden rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:bg-[--color-card-alt] hover:text-gray-300 sm:block">
+        <nav className="flex items-center gap-1" aria-label="Top navigation">
+          <button className="hidden rounded-md px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-[#1a1a1a] hover:text-gray-300 sm:block">
             Markets
           </button>
-          <button className="hidden rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:bg-[--color-card-alt] hover:text-gray-300 sm:block">
+          <button className="hidden rounded-md px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-[#1a1a1a] hover:text-gray-300 sm:block">
             Alerts
           </button>
 
-          <div className="mx-2 hidden h-4 w-px bg-[--color-border-subtle] sm:block" />
+          <div className="mx-1 hidden h-4 w-px bg-[#333] sm:block" aria-hidden="true" />
 
-          {/* Settings */}
+          {/* Settings icon */}
           <button
-            className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-[--color-card-alt] hover:text-white"
+            className="btn-icon flex items-center justify-center rounded-md p-2 text-gray-400 transition-colors hover:bg-[#1a1a1a] hover:text-white"
             aria-label="Settings"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -53,10 +66,10 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
             </svg>
           </button>
 
-          {/* Status dot */}
-          <div className="ml-1 flex items-center gap-1.5 rounded-full border border-[--color-border] bg-[--color-card-alt] px-2.5 py-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-[--color-teal] shadow-[0_0_4px_var(--color-teal)]" />
-            <span className="text-xs font-medium text-gray-400">Live</span>
+          {/* Live badge */}
+          <div className="ml-1 flex items-center gap-1.5 rounded-full border border-[#222] bg-[#1a1a1a] px-2.5 py-1.5">
+            <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#14b8a6] shadow-[0_0_4px_#14b8a6]" aria-hidden="true" />
+            <span className="text-xs font-medium text-gray-400 leading-none">Live</span>
           </div>
         </nav>
       </div>
