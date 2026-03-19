@@ -46,9 +46,9 @@ tasks:
     output: "RiskSelector component with 3 profiles (Conservative/Balanced/High Risk), risk %, max drawdown stats, colored indicators. Commit: ef66b18."
 
   - id: TASK-006
-    status: pending
+    status: in_progress
     owner: pm-alpha-scanner
-    started: null
+    started: 2026-03-19T21:40:00+08:00
     completed: null
     notes: "Signal panel with mock data - direction, entry, TP/SL, confidence"
     output: null

@@ -6,6 +6,7 @@ import Footer from './components/Footer'
 import SymbolSelector from './components/SymbolSelector'
 import ModeSelector, { type TradingMode } from './components/ModeSelector'
 import RiskSelector, { type RiskProfile } from './components/RiskSelector'
+import SignalPanel from './components/SignalPanel'
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -85,31 +86,7 @@ export default function Home() {
 
           <div className="relative z-10 flex flex-col gap-4 p-5">
             {/* Signal Panel — full width */}
-            <PlaceholderCard
-              title="Signal Panel"
-              description="Live trading signals • Awaiting scanner engine"
-              accent="buy"
-              tall
-            >
-              <div className="mt-4 flex gap-3">
-                {['BUY', 'NEUTRAL', 'SELL'].map((sig) => (
-                  <div
-                    key={sig}
-                    className="flex flex-1 items-center justify-center rounded-md border border-[--color-border] bg-[--color-card-alt] py-4"
-                  >
-                    <span
-                      className="text-xs font-bold tracking-widest"
-                      style={{
-                        color:
-                          sig === 'BUY' ? '#3b82f6' : sig === 'SELL' ? '#ef4444' : '#6b7280',
-                      }}
-                    >
-                      {sig}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </PlaceholderCard>
+            <SignalPanel symbol={selectedSymbol} mode={selectedMode} risk={selectedRisk} />
 
             {/* Second row: TP/SL + Settings */}
             <div className="grid gap-4 sm:grid-cols-2">
