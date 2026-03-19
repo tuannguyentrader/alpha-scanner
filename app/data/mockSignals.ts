@@ -31,6 +31,13 @@ export const BASE_PRICES: Record<string, number> = {
   XRPUSD: 2.35,
 }
 
+export function getBasePrice(
+  symbol: string,
+  livePrices?: Record<string, { price: number }>,
+): number {
+  return livePrices?.[symbol]?.price ?? BASE_PRICES[symbol] ?? 100
+}
+
 /* ── Pip size ────────────────────────────────────────────────────────────────── */
 
 export function getPipSize(symbol: string): number {

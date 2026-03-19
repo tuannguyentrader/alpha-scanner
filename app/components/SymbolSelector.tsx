@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { fmt } from '../data/mockSignals'
+import type { SymbolPrice } from '../hooks/usePrices'
 
 export type SymbolInfo = {
   symbol: string
@@ -63,10 +65,37 @@ export const SYMBOLS: SymbolInfo[] = [
 type Props = {
   selected: string
   onSelect: (symbol: string) => void
+  prices?: Record<string, SymbolPrice> | null
+  pricesLoading?: boolean
 }
 
-export default function SymbolSelector({ selected, onSelect }: Props) {
+function formatChange(change: number): { text: string; positive: boolean } {
+  const positive = change >= 0
+  return { text: `${positive ? '+' : ''}${change.toFixed(2)}%`, positive }
+}
+
+export default function SymbolSelector({ selected, onSelect, prices, pricesLoading }: Props) {
   const [expanded, setExpanded] = useState(true)
+  const [flashingSymbols, setFlashingSymbols] = useState<Record<string, boolean>>({})
+  const prevPricesRef = useRef<Record<string, SymbolPrice> | null>(null)
+
+  useEffect(() => {
+    if (!prices) return
+    const newFlashing: Record<string, boolean> = {}
+    if (prevPricesRef.current) {
+      for (const sym of Object.keys(prices)) {
+        if (prevPricesRef.current[sym]?.price !== prices[sym]?.price) {
+          newFlashing[sym] = true
+        }
+      }
+    }
+    prevPricesRef.current = prices
+    if (Object.keys(newFlashing).length > 0) {
+      setFlashingSymbols(newFlashing)
+      const t = setTimeout(() => setFlashingSymbols({}), 800)
+      return () => clearTimeout(t)
+    }
+  }, [prices])
 
   const categories = ['Commodity', 'Crypto'] as const
   const selectedInfo = SYMBOLS.find((s) => s.symbol === selected)
@@ -152,6 +181,25 @@ export default function SymbolSelector({ selected, onSelect }: Props) {
                 <div className="flex flex-col gap-1" role="radiogroup" aria-label={cat}>
                   {syms.map((s) => {
                     const isActive = s.symbol === selected
+                    const livePrice = prices?.[s.symbol]
+                    const isFlashing = flashingSymbols[s.symbol] ?? false
+
+                    // Determine display values
+                    let displayPrice: string
+                    let displayChange: string
+                    let changePositive: boolean
+
+                    if (livePrice) {
+                      displayPrice = fmt(s.symbol, livePrice.price)
+                      const ch = formatChange(livePrice.change24h)
+                      displayChange = ch.text
+                      changePositive = ch.positive
+                    } else {
+                      displayPrice = s.mockPrice
+                      displayChange = s.mockChange
+                      changePositive = s.changePositive
+                    }
+
                     return (
                       <button
                         key={s.symbol}
@@ -163,6 +211,7 @@ export default function SymbolSelector({ selected, onSelect }: Props) {
                           isActive
                             ? 'border-[#3b82f6]/40 bg-[#3b82f6]/10'
                             : 'border-[#222] bg-[#111] hover:border-[#333] hover:bg-[#1a1a1a]',
+                          isFlashing ? 'ring-1 ring-[#22c55e]/40' : '',
                         ].join(' ')}
                         style={isActive ? { boxShadow: '0 0 10px rgba(59,130,246,0.12)' } : undefined}
                       >
@@ -182,16 +231,25 @@ export default function SymbolSelector({ selected, onSelect }: Props) {
                         </div>
 
                         <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <span className="hidden sm:inline font-mono text-[10px] text-gray-500">
-                            {s.mockPrice}
-                          </span>
+                          {pricesLoading && !livePrice ? (
+                            <span className="hidden sm:block h-2 w-14 rounded bg-[#222] animate-pulse" />
+                          ) : (
+                            <span
+                              className={[
+                                'hidden sm:inline font-mono text-[10px] transition-colors',
+                                isFlashing ? 'text-[#22c55e]' : 'text-gray-500',
+                              ].join(' ')}
+                            >
+                              {displayPrice}
+                            </span>
+                          )}
                           <span
                             className={[
                               'font-mono text-[9px] font-semibold',
-                              s.changePositive ? 'text-[#14b8a6]' : 'text-[#ef4444]',
+                              changePositive ? 'text-[#22c55e]' : 'text-[#ef4444]',
                             ].join(' ')}
                           >
-                            {s.mockChange}
+                            {displayChange}
                           </span>
                         </div>
                       </button>

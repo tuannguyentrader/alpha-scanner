@@ -9,6 +9,35 @@ import RiskSelector, { type RiskProfile } from './components/RiskSelector'
 import SignalPanel from './components/SignalPanel'
 import TpSlDisplay from './components/TpSlDisplay'
 import SettingsPanel, { DEFAULT_SETTINGS, type ScannerSettings } from './components/SettingsPanel'
+import { usePrices } from './hooks/usePrices'
+
+type ConnectionStatus = 'loading' | 'live' | 'stale' | 'error'
+
+function getConnectionStatus(
+  loading: boolean,
+  error: string | null,
+  lastUpdated: number | null,
+): ConnectionStatus {
+  if (loading && !lastUpdated) return 'loading'
+  if (error && !lastUpdated) return 'error'
+  if (!lastUpdated) return 'error'
+  if (Date.now() - lastUpdated > 60_000) return 'stale'
+  return 'live'
+}
+
+const STATUS_DOT: Record<ConnectionStatus, string> = {
+  live: 'bg-[#22c55e]',
+  stale: 'bg-yellow-400',
+  loading: 'bg-gray-500 animate-pulse',
+  error: 'bg-[#ef4444]',
+}
+
+const STATUS_LABEL: Record<ConnectionStatus, string> = {
+  live: 'LIVE',
+  stale: 'STALE',
+  loading: 'CONNECTING',
+  error: 'OFFLINE',
+}
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -16,6 +45,9 @@ export default function Home() {
   const [selectedMode, setSelectedMode] = useState<TradingMode>('swing')
   const [selectedRisk, setSelectedRisk] = useState<RiskProfile>('balanced')
   const [settings, setSettings] = useState<ScannerSettings>(DEFAULT_SETTINGS)
+
+  const { prices, loading: pricesLoading, error: pricesError, lastUpdated } = usePrices()
+  const connectionStatus = getConnectionStatus(pricesLoading, pricesError, lastUpdated)
 
   const closeSidebar = () => setSidebarOpen(false)
 
@@ -66,6 +98,8 @@ export default function Home() {
             <SymbolSelector
               selected={selectedSymbol}
               onSelect={(s) => { setSelectedSymbol(s); closeSidebar() }}
+              prices={prices}
+              pricesLoading={pricesLoading}
             />
 
             <ModeSelector
@@ -94,6 +128,22 @@ export default function Home() {
           />
 
           <div className="relative z-10 flex flex-col gap-4 p-4 sm:p-5">
+            {/* Connection status indicator */}
+            <div className="flex justify-end items-center gap-1.5">
+              <span
+                className={`h-1.5 w-1.5 rounded-full flex-shrink-0 ${STATUS_DOT[connectionStatus]}`}
+                aria-hidden="true"
+              />
+              <span className="font-mono text-[9px] text-gray-600 uppercase tracking-widest">
+                {STATUS_LABEL[connectionStatus]}
+              </span>
+              {lastUpdated && connectionStatus !== 'error' && (
+                <span className="font-mono text-[9px] text-gray-700">
+                  · {new Date(lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </span>
+              )}
+            </div>
+
             {/* Signal Panel — full width */}
             <SignalPanel symbol={selectedSymbol} mode={selectedMode} risk={selectedRisk} />
 

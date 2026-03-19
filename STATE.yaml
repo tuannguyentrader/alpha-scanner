@@ -1,92 +1,74 @@
 project: alpha-scanner
-updated: 2026-03-19T00:00:00Z
+updated: 2026-03-20T21:43:00+08:00
 repo: https://github.com/naimkatiman/alpha-scanner
-deployed: null
-phase: 1
+phase: 2 # 1=frontend UI✅, 2=scanner engine, 3=multi-asset, 4=broker API
 
 tasks:
+  # Phase 1 — DONE
   - id: TASK-001
     status: done
-    owner: pm-alpha-scanner
-    started: 2026-03-19T19:37:00+08:00
-    completed: 2026-03-19T20:00:00+08:00
-    notes: "Scaffold Next.js + Tailwind project, dark fintech theme, deploy pipeline"
-    output: "Next.js 16.2.0 + Tailwind v4 + TypeScript strict. App Router, dark theme via @theme CSS vars. npm run build passes."
-
+    output: "Next.js 16 + Tailwind v4 + dark fintech scaffold"
   - id: TASK-002
     status: done
-    owner: pm-alpha-scanner
-    started: 2026-03-19T19:46:00+08:00
-    completed: 2026-03-19T20:30:00+08:00
-    notes: "Dashboard layout - Navbar, Footer, main grid, responsive shell"
-    output: "Navbar (sticky, 64px, mobile hamburger, live badge), Footer (minimal), page.tsx replaced with full dashboard shell: 280px collapsible sidebar (Symbol/Mode/Risk cards) + main content grid (Signal Panel, TP/SL, Settings placeholders). Mobile drawer pattern with overlay. npm run build passes."
-
+    output: "Dashboard layout - Navbar, sidebar, Footer"
   - id: TASK-003
     status: done
-    owner: pm-alpha-scanner
-    started: 2026-03-19T20:37:00+08:00
-    completed: 2026-03-19T20:40:00+08:00
-    notes: "Symbol selector - XAUUSD, XAGUSD, BTCUSD, ETHUSD, XRPUSD with asset category labels"
-    output: "SymbolSelector component with collapsible panel, category grouping (Commodities/Crypto), mock prices + % change, active state highlight. Integrated with selectedSymbol state in page.tsx. Commit: 00fee78."
-
+    output: "Symbol selector (XAUUSD, XAGUSD, BTCUSD, ETHUSD, XRPUSD)"
   - id: TASK-004
     status: done
-    owner: pm-alpha-scanner
-    started: 2026-03-19T20:41:00+08:00
-    completed: 2026-03-19T20:45:00+08:00
-    notes: "Mode selector - Swing/Intraday/Scalper toggle with descriptions"
-    output: "ModeSelector component with 3 modes (Swing/Intraday/Scalper), timeframes, descriptions, collapsible panel. Commit: ef66b18."
-
+    output: "Mode selector (Swing/Intraday/Scalper)"
   - id: TASK-005
     status: done
-    owner: pm-alpha-scanner
-    started: 2026-03-19T20:41:00+08:00
-    completed: 2026-03-19T20:45:00+08:00
-    notes: "Risk profile selector - High Risk/Balanced/Conservative cards"
-    output: "RiskSelector component with 3 profiles (Conservative/Balanced/High Risk), risk %, max drawdown stats, colored indicators. Commit: ef66b18."
-
+    output: "Risk profile selector (Conservative/Balanced/High Risk)"
   - id: TASK-006
     status: done
-    owner: pm-alpha-scanner
-    started: 2026-03-19T21:40:00+08:00
-    completed: 2026-03-19T21:43:00+08:00
-    notes: "Signal panel with mock data - direction, entry, TP/SL, confidence"
-    output: "SignalPanel component with BUY/SELL badges, confidence bar, 4 tech indicators (RSI/MACD/EMA/S/R), TP1-3 (1.618/2.618/4.236 Fib), SL with pip distance, R:R ratio bar. Mock prices per symbol. Swing=wide, Scalper=tight. Commit: 79f89d3."
-
+    output: "Signal panel with mock data"
   - id: TASK-007
     status: done
-    owner: pm-alpha-scanner
-    started: 2026-03-19T22:37:00+08:00
-    completed: 2026-03-19T22:42:00+08:00
-    notes: "TP/SL visual display component with price levels and risk-reward ratio"
-    output: "TpSlDisplay component with visual price ladder (TP1-3 + SL), entry marker with direction badge, Fibonacci tags, distance bars, R:R ratio grid with mini bars, position info footer. Replaced placeholder. Commit: 714e139."
-
+    output: "TP/SL visual display with Fibonacci levels"
   - id: TASK-008
     status: done
-    owner: pm-alpha-scanner
-    started: 2026-03-19T23:44:00+08:00
-    completed: 2026-03-19T23:50:00+08:00
-    notes: "Settings panel - leverage 1:1000, capital $500, TP1 1.618 defaults"
-    output: "SettingsPanel component with leverage selector (7 presets, high-risk warning), capital selector (7 presets + custom input), TP1 Fibonacci extension selector (auto-chains TP2/TP3), position summary card, reset button. Removed PlaceholderCard. Commit: c772d11."
-
+    output: "Settings panel (leverage, capital, TP ratio)"
   - id: TASK-009
     status: done
-    owner: pm-alpha-scanner
-    started: 2026-03-20T00:38:00+08:00
-    completed: 2026-03-20T00:45:00+08:00
-    notes: "Seed mock signal data for all 5 symbols across all 3 modes — extract shared data module"
-    output: "Created app/data/mockSignals.ts — centralized mock data with 15 unique signal configs (5 symbols × 3 modes). Each has unique direction, confidence, technicals, SL width, narrative. Refactored SignalPanel + TpSlDisplay to import from shared module. Build passes."
-
+    output: "Mock signal data (15 configs: 5 symbols × 3 modes)"
   - id: TASK-010
+    status: done
+    output: "Mobile responsiveness + final polish. Commit f67e2a8."
+
+  # Phase 2 — Scanner Engine
+  - id: TASK-011
+    status: in_progress
+    owner: pm-alpha-scanner
+    notes: "Real-time price fetching — CoinGecko for crypto (BTCUSD, ETHUSD, XRPUSD), free forex/metals API for XAUUSD, XAGUSD. Create /api/prices route, refresh every 30s on frontend."
+    output: null
+
+  - id: TASK-012
     status: pending
     owner: pm-alpha-scanner
-    started: null
-    completed: null
-    notes: "Mobile responsiveness pass + final polish"
+    notes: "Support & Resistance detection — identify key S/R levels from recent price history per symbol. Store in /data or compute via API."
+    output: null
+
+  - id: TASK-013
+    status: pending
+    owner: pm-alpha-scanner
+    notes: "Technical indicator calculations — RSI, MACD, EMA (20/50/200). Compute from real price data instead of mock values."
+    output: null
+
+  - id: TASK-014
+    status: pending
+    owner: pm-alpha-scanner
+    notes: "Signal generation logic — use RSI/MACD/EMA/S&R to produce BUY/SELL/NEUTRAL per symbol+mode combination. Replace mock signals with computed ones."
+    output: null
+
+  - id: TASK-015
+    status: pending
+    owner: pm-alpha-scanner
+    notes: "TP/SL calculation engine — compute entry, TP1/2/3 (Fibonacci extensions), SL based on risk profile + leverage + volatility. Replace hardcoded values."
     output: null
 
 next_actions:
-  - "pm-alpha-scanner: Build TASK-010 (Mobile responsiveness + final polish)"
+  - "pm-alpha-scanner: Start TASK-011 (real-time price fetching)"
 
 approval_pending: false
 pending_commit_summary: null
