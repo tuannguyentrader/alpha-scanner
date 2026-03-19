@@ -44,10 +44,10 @@ tasks:
     output: "Real-time price fetching with CoinGecko + metals APIs, 30s cache, usePrices hook, live status indicator. Commit fb68e70."
 
   - id: TASK-012
-    status: pending
+    status: done
     owner: pm-alpha-scanner
     notes: "Support & Resistance detection — identify key S/R levels from recent price history per symbol. Store in /data or compute via API."
-    output: null
+    output: "S/R detection engine with pivot clustering algo, history API (CoinGecko OHLC + synthetic metals), /api/sr route, useSR hook (60s refresh), SRLevels visual component (price ladder with strength bars). Commit 97f940f."
 
   - id: TASK-013
     status: pending
@@ -68,7 +68,7 @@ tasks:
     output: null
 
 next_actions:
-  - "pm-alpha-scanner: Start TASK-012 (support & resistance detection)"
+  - "pm-alpha-scanner: Start TASK-013 (technical indicator calculations — RSI, MACD, EMA)"
 
 approval_pending: false
 pending_commit_summary: null
