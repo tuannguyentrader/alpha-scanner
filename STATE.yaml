@@ -1,5 +1,5 @@
 project: alpha-scanner
-updated: 2026-03-20T21:43:00+08:00
+updated: 2026-03-20T06:37:00+08:00
 repo: https://github.com/naimkatiman/alpha-scanner
 phase: 2 # 1=frontend UI✅, 2=scanner engine, 3=multi-asset, 4=broker API
 
@@ -38,10 +38,10 @@ tasks:
 
   # Phase 2 — Scanner Engine
   - id: TASK-011
-    status: in_progress
+    status: done
     owner: pm-alpha-scanner
     notes: "Real-time price fetching — CoinGecko for crypto (BTCUSD, ETHUSD, XRPUSD), free forex/metals API for XAUUSD, XAGUSD. Create /api/prices route, refresh every 30s on frontend."
-    output: null
+    output: "Real-time price fetching with CoinGecko + metals APIs, 30s cache, usePrices hook, live status indicator. Commit fb68e70."
 
   - id: TASK-012
     status: pending
@@ -68,7 +68,7 @@ tasks:
     output: null
 
 next_actions:
-  - "pm-alpha-scanner: Start TASK-011 (real-time price fetching)"
+  - "pm-alpha-scanner: Start TASK-012 (support & resistance detection)"
 
 approval_pending: false
 pending_commit_summary: null
