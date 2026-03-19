@@ -30,20 +30,20 @@ tasks:
     output: "SymbolSelector component with collapsible panel, category grouping (Commodities/Crypto), mock prices + % change, active state highlight. Integrated with selectedSymbol state in page.tsx. Commit: 00fee78."
 
   - id: TASK-004
-    status: in_progress
+    status: done
     owner: pm-alpha-scanner
     started: 2026-03-19T20:41:00+08:00
-    completed: null
+    completed: 2026-03-19T20:45:00+08:00
     notes: "Mode selector - Swing/Intraday/Scalper toggle with descriptions"
-    output: null
+    output: "ModeSelector component with 3 modes (Swing/Intraday/Scalper), timeframes, descriptions, collapsible panel. Commit: ef66b18."
 
   - id: TASK-005
-    status: pending
+    status: done
     owner: pm-alpha-scanner
-    started: null
-    completed: null
+    started: 2026-03-19T20:41:00+08:00
+    completed: 2026-03-19T20:45:00+08:00
     notes: "Risk profile selector - High Risk/Balanced/Conservative cards"
-    output: null
+    output: "RiskSelector component with 3 profiles (Conservative/Balanced/High Risk), risk %, max drawdown stats, colored indicators. Commit: ef66b18."
 
   - id: TASK-006
     status: pending
@@ -86,7 +86,7 @@ tasks:
     output: null
 
 next_actions:
-  - "pm-alpha-scanner: Build TASK-003 (Symbol Selector component with asset categories)"
+  - "pm-alpha-scanner: Build TASK-006 (Signal panel with mock data)"
 
 approval_pending: false
 pending_commit_summary: null
