@@ -46,17 +46,17 @@ tasks:
     output: "RiskSelector component with 3 profiles (Conservative/Balanced/High Risk), risk %, max drawdown stats, colored indicators. Commit: ef66b18."
 
   - id: TASK-006
-    status: in_progress
+    status: done
     owner: pm-alpha-scanner
     started: 2026-03-19T21:40:00+08:00
-    completed: null
+    completed: 2026-03-19T21:43:00+08:00
     notes: "Signal panel with mock data - direction, entry, TP/SL, confidence"
-    output: null
+    output: "SignalPanel component with BUY/SELL badges, confidence bar, 4 tech indicators (RSI/MACD/EMA/S/R), TP1-3 (1.618/2.618/4.236 Fib), SL with pip distance, R:R ratio bar. Mock prices per symbol. Swing=wide, Scalper=tight. Commit: 79f89d3."
 
   - id: TASK-007
-    status: pending
+    status: in_progress
     owner: pm-alpha-scanner
-    started: null
+    started: 2026-03-19T22:37:00+08:00
     completed: null
     notes: "TP/SL visual display component with price levels and risk-reward ratio"
     output: null
@@ -86,7 +86,7 @@ tasks:
     output: null
 
 next_actions:
-  - "pm-alpha-scanner: Build TASK-006 (Signal panel with mock data)"
+  - "pm-alpha-scanner: Build TASK-007 (TP/SL visual display with price levels and risk-reward ratio)"
 
 approval_pending: false
 pending_commit_summary: null

@@ -7,6 +7,7 @@ import SymbolSelector from './components/SymbolSelector'
 import ModeSelector, { type TradingMode } from './components/ModeSelector'
 import RiskSelector, { type RiskProfile } from './components/RiskSelector'
 import SignalPanel from './components/SignalPanel'
+import TpSlDisplay from './components/TpSlDisplay'
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -90,17 +91,7 @@ export default function Home() {
 
             {/* Second row: TP/SL + Settings */}
             <div className="grid gap-4 sm:grid-cols-2">
-              <PlaceholderCard
-                title="TP / SL Display"
-                description="Take profit & stop loss levels"
-                accent="teal"
-              >
-                <div className="mt-4 space-y-2">
-                  <LevelRow label="Take Profit 1" value="—" color="#14b8a6" />
-                  <LevelRow label="Take Profit 2" value="—" color="#3b82f6" />
-                  <LevelRow label="Stop Loss" value="—" color="#ef4444" />
-                </div>
-              </PlaceholderCard>
+              <TpSlDisplay symbol={selectedSymbol} mode={selectedMode} risk={selectedRisk} />
 
               <PlaceholderCard
                 title="Settings"
@@ -171,15 +162,4 @@ function PlaceholderCard({
   )
 }
 
-/* ── TP/SL row ────────────────────────────────────────────────────────────── */
 
-function LevelRow({ label, value, color }: { label: string; value: string; color: string }) {
-  return (
-    <div className="flex items-center justify-between rounded border border-[--color-border] bg-[--color-card-alt] px-3 py-2">
-      <span className="text-xs text-gray-500">{label}</span>
-      <span className="font-mono text-xs font-semibold" style={{ color }}>
-        {value}
-      </span>
-    </div>
-  )
-}
