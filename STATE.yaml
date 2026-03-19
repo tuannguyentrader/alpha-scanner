@@ -6,12 +6,12 @@ phase: 1
 
 tasks:
   - id: TASK-001
-    status: pending
+    status: done
     owner: pm-alpha-scanner
-    started: null
-    completed: null
+    started: 2026-03-19T19:37:00+08:00
+    completed: 2026-03-19T20:00:00+08:00
     notes: "Scaffold Next.js + Tailwind project, dark fintech theme, deploy pipeline"
-    output: null
+    output: "Next.js 16.2.0 + Tailwind v4 + TypeScript strict. App Router, dark theme via @theme CSS vars. npm run build passes."
 
   - id: TASK-002
     status: pending
@@ -86,7 +86,7 @@ tasks:
     output: null
 
 next_actions:
-  - "pm-alpha-scanner: Build TASK-001 (scaffold project)"
+  - "pm-alpha-scanner: Build TASK-002 (dashboard layout - Navbar, Footer, main grid)"
 
 approval_pending: false
 pending_commit_summary: null
