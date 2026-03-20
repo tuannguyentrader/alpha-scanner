@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, lazy, Suspense, memo } from 'react'
+import { useState, useEffect, lazy, Suspense, memo, useRef } from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import SymbolSelector from './components/SymbolSelector'
@@ -22,8 +22,11 @@ import { useAlerts } from './hooks/useAlerts'
 import { usePaperTrading } from './hooks/usePaperTrading'
 import { useSignalHistory } from './hooks/useSignalHistory'
 import { usePerformanceAnalytics } from './hooks/usePerformanceAnalytics'
+import { useCustomAlerts } from './hooks/useCustomAlerts'
+import { useTelegram } from './hooks/useTelegram'
 
 // Lazy-loaded heavy panels
+const PriceChart = lazy(() => import('./components/PriceChart'))
 const SRLevels = lazy(() => import('./components/SRLevels'))
 const IndicatorsPanel = lazy(() => import('./components/IndicatorsPanel'))
 const AlertsPanel = lazy(() => import('./components/AlertsPanel').then(m => ({ default: m.default })))
@@ -31,6 +34,8 @@ const PaperTrading = lazy(() => import('./components/PaperTrading'))
 const SignalHistory = lazy(() => import('./components/SignalHistory'))
 const MultiTimeframe = lazy(() => import('./components/MultiTimeframe'))
 const PerformanceAnalytics = lazy(() => import('./components/PerformanceAnalytics'))
+const AlertRuleBuilder = lazy(() => import('./components/AlertRuleBuilder'))
+const TelegramSettings = lazy(() => import('./components/TelegramSettings'))
 
 // Memoized pure display components
 const MemoSignalPanel = memo(SignalPanel)
@@ -94,6 +99,30 @@ export default function Home() {
     paper.account.balance,
     paper.unrealizedPL,
   )
+
+  // Custom alert rules
+  const customAlerts = useCustomAlerts(selectedSymbol, currentPrice)
+
+  // Telegram integration
+  const telegram = useTelegram()
+  const prevDirectionRef = useRef<string>('')
+
+  // Send Telegram alert on signal direction change
+  useEffect(() => {
+    if (!signal || signal.direction === 'NEUTRAL' || currentPrice <= 0) return
+    const key = `${selectedSymbol}-${signal.direction}`
+    if (prevDirectionRef.current === key) return
+    prevDirectionRef.current = key
+
+    void telegram.sendSignalAlert(
+      selectedSymbol,
+      signal.direction,
+      signal.confidence,
+      currentPrice,
+      currentPrice * (signal.direction === 'BUY' ? 1.01 : 0.99),
+      currentPrice * (signal.direction === 'BUY' ? 0.995 : 1.005),
+    )
+  }, [selectedSymbol, signal, currentPrice, telegram])
 
   // Signal history tracking
   const signalHistoryInput = signal && currentPrice > 0 ? {
@@ -186,6 +215,32 @@ export default function Home() {
               onConnect={broker.connect}
               onDisconnect={broker.disconnect}
             />
+
+            {/* Custom alert rules */}
+            <ErrorBoundary fallbackTitle="Alert rules error">
+              <Suspense fallback={<div className="h-10 rounded bg-[#1a1a1a] animate-pulse" />}>
+                <AlertRuleBuilder
+                  rules={customAlerts.rules}
+                  onAddRule={customAlerts.addRule}
+                  onUpdateRule={customAlerts.updateRule}
+                  onDeleteRule={customAlerts.deleteRule}
+                />
+              </Suspense>
+            </ErrorBoundary>
+
+            {/* Telegram alerts */}
+            <ErrorBoundary fallbackTitle="Telegram error">
+              <Suspense fallback={<div className="h-10 rounded bg-[#1a1a1a] animate-pulse" />}>
+                <TelegramSettings
+                  config={telegram.config}
+                  sending={telegram.sending}
+                  testStatus={telegram.testStatus}
+                  lastError={telegram.lastError}
+                  onUpdateConfig={telegram.updateConfig}
+                  onTestConnection={telegram.testConnection}
+                />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         </aside>
 
@@ -233,6 +288,13 @@ export default function Home() {
             {/* Signal Panel — full width */}
             <ErrorBoundary fallbackTitle="Signal panel error">
               <MemoSignalPanel symbol={selectedSymbol} mode={selectedMode} risk={selectedRisk} />
+            </ErrorBoundary>
+
+            {/* Price Chart */}
+            <ErrorBoundary fallbackTitle="Price chart error">
+              <Suspense fallback={<PanelSkeleton />}>
+                <PriceChart symbol={selectedSymbol} />
+              </Suspense>
             </ErrorBoundary>
 
             {/* Second row: TP/SL + Settings — stack on mobile */}

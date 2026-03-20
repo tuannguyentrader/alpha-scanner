@@ -46,12 +46,18 @@ export default function Navbar({ onMenuToggle, sidebarOpen = false }: NavbarProp
 
         {/* Right nav */}
         <nav className="flex items-center gap-1" aria-label="Top navigation">
-          <button className="hidden rounded-md px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-[#1a1a1a] hover:text-gray-300 sm:block">
-            Markets
-          </button>
-          <button className="hidden rounded-md px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-[#1a1a1a] hover:text-gray-300 sm:block">
-            Alerts
-          </button>
+          <Link
+            href="/backtest"
+            className="hidden rounded-md px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-[#1a1a1a] hover:text-gray-300 sm:block"
+          >
+            Backtest
+          </Link>
+          <Link
+            href="/leaderboard"
+            className="hidden rounded-md px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:bg-[#1a1a1a] hover:text-gray-300 sm:block"
+          >
+            Leaderboard
+          </Link>
 
           <div className="mx-1 hidden h-4 w-px bg-[#333] sm:block" aria-hidden="true" />
 
