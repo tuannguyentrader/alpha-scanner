@@ -50,10 +50,10 @@ tasks:
     output: "S/R detection engine with pivot clustering algo, history API (CoinGecko OHLC + synthetic metals), /api/sr route, useSR hook (60s refresh), SRLevels visual component (price ladder with strength bars). Commit 97f940f."
 
   - id: TASK-013
-    status: in_progress
+    status: done
     owner: pm-alpha-scanner
     notes: "Technical indicator calculations — RSI, MACD, EMA (20/50/200). Compute from real price data instead of mock values."
-    output: null
+    output: "technicalAnalysis.ts (Wilder RSI, EMA, MACD), /api/indicators route (60s cache), useIndicators hook, IndicatorsPanel component (RSI gauge, MACD grid, EMA alignment). Integrated in page.tsx. Commit 74bb054."
 
   - id: TASK-014
     status: pending
@@ -68,7 +68,7 @@ tasks:
     output: null
 
 next_actions:
-  - "pm-alpha-scanner: Start TASK-013 (technical indicator calculations — RSI, MACD, EMA)"
+  - "pm-alpha-scanner: Start TASK-014 (signal generation logic — real BUY/SELL/NEUTRAL from RSI/MACD/EMA/S&R)"
 
 approval_pending: false
 pending_commit_summary: null
