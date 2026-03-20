@@ -1,7 +1,7 @@
 project: alpha-scanner
 updated: 2026-03-20T14:05:00+08:00
 repo: https://github.com/naimkatiman/alpha-scanner
-phase: 6 # 1=frontend UI✅, 2=scanner engine✅, 3=multi-asset expansion✅, 4=broker API✅, 5=production hardening✅, 6=advanced analytics🔧
+phase: 7 # 1=frontend UI✅, 2=scanner engine✅, 3=multi-asset expansion✅, 4=broker API✅, 5=production hardening✅, 6=advanced analytics✅, 7=backtesting+charts+alerts🔧
 
 tasks:
   # Phase 1 — DONE
@@ -193,9 +193,41 @@ tasks:
     notes: "Performance Analytics Dashboard — equity curve chart (canvas-based), daily equity snapshots in localStorage, drawdown visualization, profit by symbol/mode breakdown, key metrics (max drawdown%, profit factor, avg win/loss)"
     output: "usePerformanceAnalytics hook (daily equity snapshots, trade result recording, full metrics computation). PerformanceAnalytics component with canvas equity curve (gradient fill, drawdown shading, grid labels, DPR-aware), 8 key metric cards (P&L, drawdown, profit factor, peak equity, avg win/loss, streaks), breakdown tab (profit by symbol + mode with visual bars). Clean build."
 
+  # Phase 7 — Backtesting, Charts, Leaderboard, Alerts, Telegram
+  - id: TASK-041
+    status: done
+    owner: coding-agent
+    notes: "Backtesting Engine — /api/backtest route, backtestEngine.ts, useBacktest hook, BacktestDashboard component, /backtest page"
+    output: "backtestEngine.ts replays signals against historical OHLC (50-candle sliding window, ATR-based TP/SL, entry on direction change, exit on TP1/SL/reverse). /api/backtest route (5min cache, rate limited). BacktestDashboard with 8 metric cards, canvas equity curve, trades table. /backtest page with selectors. Clean build."
+
+  - id: TASK-042
+    status: done
+    owner: coding-agent
+    notes: "Price Chart with Signal Overlays — canvas candlestick chart with EMA/SR overlays"
+    output: "PriceChart component: DPR-aware canvas, green/red candlesticks with wicks, EMA20 (yellow)/EMA50 (blue)/EMA200 (purple) lines, S/R dashed horizontals, signal markers (▲BUY/▼SELL), hover tooltip (O/H/L/C), last 50 candles. Integrated below SignalPanel. Clean build."
+
+  - id: TASK-043
+    status: done
+    owner: coding-agent
+    notes: "Signal Accuracy Leaderboard — /leaderboard page ranking symbol+mode combos"
+    output: "Leaderboard component: reads signal history from localStorage, ranks by win rate (min 3 signals), 🥇🥈🥉 trophies, category filter tabs (All/Metals/Crypto/Forex), win rate bars, avg confidence, best streak. /leaderboard page. Clean build."
+
+  - id: TASK-044
+    status: done
+    owner: coding-agent
+    notes: "Custom Alert Rules — user-defined conditions with indicator evaluation"
+    output: "alertRules.ts: 6 indicators (RSI/MACD_histogram/stochastic_k/bollinger_pctb/ema20_cross/price), 4 operators (</>/ crosses_above/crosses_below), AND/OR logic. AlertRuleBuilder component in sidebar (rule form, condition rows, enable/disable/edit/delete). useCustomAlerts hook (30s eval, 5min cooldown, browser notifications). Clean build."
+
+  - id: TASK-045
+    status: done
+    owner: coding-agent
+    notes: "Telegram Bot Integration — signal alerts via Telegram Bot API"
+    output: "/api/telegram/send + /api/telegram/test routes. useTelegram hook (localStorage config, auto-send on direction change, HTML-formatted alerts with entry/TP/SL). TelegramSettings component in sidebar (token/chatID inputs, show/hide toggle, test connection, auto-send toggle, BotFather instructions). Clean build."
+
 next_actions:
-  - "Phase 6 COMPLETE. All 5 tasks (TASK-036 through TASK-040) done."
-  - "Ready for Phase 7 when approved."
+  - "Phase 7 COMPLETE. All 5 tasks (TASK-041 through TASK-045) done."
+  - "Commit 095e577 pushed to GitHub. 17 files changed, 2808 insertions."
+  - "Ready for Phase 8 when approved."
 
 approval_pending: false
 pending_commit_summary: null
