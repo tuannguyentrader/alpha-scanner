@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useIndicators } from '../hooks/useIndicators'
 import { fmt } from '../data/mockSignals'
-import type { AllIndicators } from '../lib/technicalAnalysis'
+import type { AllIndicators, BollingerBands, StochasticResult } from '../lib/technicalAnalysis'
 
 interface IndicatorsPanelProps {
   symbol: string
@@ -284,6 +284,170 @@ function EMADisplay({
   )
 }
 
+/* ── Bollinger Bands Display ───────────────────────────────────────────────── */
+
+function BollingerDisplay({
+  symbol,
+  bollinger,
+  currentPrice,
+}: {
+  symbol: string
+  bollinger: BollingerBands
+  currentPrice: number
+}) {
+  const { upper, middle, lower, bandwidth, percentB } = bollinger
+  const isNearUpper = percentB > 0.8
+  const isNearLower = percentB < 0.2
+  const sentiment: Sentiment = isNearLower ? 'bullish' : isNearUpper ? 'bearish' : 'neutral'
+  const posLabel = isNearLower
+    ? 'Near Lower Band'
+    : isNearUpper
+    ? 'Near Upper Band'
+    : 'Mid Range'
+
+  const pctBClamped = Math.max(0, Math.min(1, percentB))
+  const pctColor = percentB < 0.2 ? '#14b8a6' : percentB > 0.8 ? '#ef4444' : '#6b7280'
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-gray-300">Bollinger Bands</span>
+          <span className="text-[10px] text-gray-600">20, 2σ</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500">{posLabel}</span>
+          <Badge sentiment={sentiment} />
+        </div>
+      </div>
+
+      {/* Band values */}
+      <div className="grid grid-cols-3 gap-2">
+        <div className="rounded-md border border-[#222] bg-[#0f0f0f] px-3 py-2 text-center">
+          <div className="text-[9px] uppercase tracking-widest text-gray-600 mb-1">Upper</div>
+          <div className="font-mono text-sm font-bold text-[#ef4444]">
+            {fmt(symbol, upper)}
+          </div>
+        </div>
+        <div className="rounded-md border border-[#222] bg-[#0f0f0f] px-3 py-2 text-center">
+          <div className="text-[9px] uppercase tracking-widest text-gray-600 mb-1">Middle</div>
+          <div className="font-mono text-sm font-bold text-gray-300">
+            {fmt(symbol, middle)}
+          </div>
+        </div>
+        <div className="rounded-md border border-[#222] bg-[#0f0f0f] px-3 py-2 text-center">
+          <div className="text-[9px] uppercase tracking-widest text-gray-600 mb-1">Lower</div>
+          <div className="font-mono text-sm font-bold text-[#14b8a6]">
+            {fmt(symbol, lower)}
+          </div>
+        </div>
+      </div>
+
+      {/* %B gauge */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] text-gray-600">%B Position</span>
+          <span className="font-mono text-xs font-bold" style={{ color: pctColor }}>
+            {(percentB * 100).toFixed(1)}%
+          </span>
+        </div>
+        <div className="relative h-3 rounded-full bg-[#1a1a1a] overflow-hidden">
+          <div className="absolute inset-0 flex">
+            <div className="h-full" style={{ width: '20%', backgroundColor: '#14b8a610' }} />
+            <div className="h-full" style={{ width: '60%', backgroundColor: '#6b728010' }} />
+            <div className="h-full flex-1" style={{ backgroundColor: '#ef444410' }} />
+          </div>
+          <div className="absolute inset-y-0" style={{ left: '20%', width: '1px', backgroundColor: '#333' }} />
+          <div className="absolute inset-y-0" style={{ left: '80%', width: '1px', backgroundColor: '#333' }} />
+          <div
+            className="absolute top-0 h-full w-1 rounded-full transition-all duration-700"
+            style={{ left: `calc(${pctBClamped * 100}% - 2px)`, backgroundColor: pctColor, boxShadow: `0 0 6px ${pctColor}` }}
+          />
+        </div>
+        <div className="flex justify-between text-[9px] text-gray-700">
+          <span className="text-[#14b8a6]">Oversold</span>
+          <span>Bandwidth: {(bandwidth * 100).toFixed(2)}%</span>
+          <span className="text-[#ef4444]">Overbought</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Stochastic Display ───────────────────────────────────────────────────── */
+
+function StochasticDisplay({ stochastic }: { stochastic: StochasticResult }) {
+  const { k, d } = stochastic
+  const isOversold = k < 20
+  const isOverbought = k > 80
+  const isBullishCross = k > d
+  const sentiment: Sentiment = isOversold ? 'bullish' : isOverbought ? 'bearish' : 'neutral'
+  const crossLabel = isBullishCross ? 'Bullish Cross' : 'Bearish Cross'
+
+  const kClamped = Math.max(0, Math.min(100, k))
+  const dClamped = Math.max(0, Math.min(100, d))
+  const kColor = isOversold ? '#14b8a6' : isOverbought ? '#ef4444' : '#6b7280'
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-gray-300">Stochastic</span>
+          <span className="text-[10px] text-gray-600">14, 3, 3</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500">{crossLabel}</span>
+          <Badge sentiment={sentiment} />
+        </div>
+      </div>
+
+      {/* %K and %D values */}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-md border border-[#222] bg-[#0f0f0f] px-3 py-2 text-center">
+          <div className="text-[9px] uppercase tracking-widest text-gray-600 mb-1">%K</div>
+          <div className="font-mono text-xl font-bold" style={{ color: kColor }}>
+            {k.toFixed(1)}
+          </div>
+        </div>
+        <div className="rounded-md border border-[#222] bg-[#0f0f0f] px-3 py-2 text-center">
+          <div className="text-[9px] uppercase tracking-widest text-gray-600 mb-1">%D</div>
+          <div className="font-mono text-xl font-bold text-gray-300">
+            {d.toFixed(1)}
+          </div>
+        </div>
+      </div>
+
+      {/* Gauge */}
+      <div className="relative h-3 rounded-full bg-[#1a1a1a] overflow-hidden">
+        <div className="absolute inset-0 flex">
+          <div className="h-full" style={{ width: '20%', backgroundColor: '#14b8a610' }} />
+          <div className="h-full" style={{ width: '60%', backgroundColor: '#6b728010' }} />
+          <div className="h-full flex-1" style={{ backgroundColor: '#ef444410' }} />
+        </div>
+        <div className="absolute inset-y-0" style={{ left: '20%', width: '1px', backgroundColor: '#333' }} />
+        <div className="absolute inset-y-0" style={{ left: '80%', width: '1px', backgroundColor: '#333' }} />
+        {/* %D marker */}
+        <div
+          className="absolute top-0 h-full w-1 rounded-full transition-all duration-700 opacity-50"
+          style={{ left: `calc(${dClamped}% - 2px)`, backgroundColor: '#9ca3af' }}
+        />
+        {/* %K marker */}
+        <div
+          className="absolute top-0 h-full w-1 rounded-full transition-all duration-700"
+          style={{ left: `calc(${kClamped}% - 2px)`, backgroundColor: kColor, boxShadow: `0 0 6px ${kColor}` }}
+        />
+      </div>
+      <div className="flex justify-between text-[9px] text-gray-700">
+        <span>0</span>
+        <span className="text-[#14b8a6]">20</span>
+        <span>50</span>
+        <span className="text-[#ef4444]">80</span>
+        <span>100</span>
+      </div>
+    </div>
+  )
+}
+
 /* ── Shimmer skeleton ─────────────────────────────────────────────────────── */
 
 function SkeletonRow() {
@@ -315,7 +479,7 @@ export default function IndicatorsPanel({ symbol }: IndicatorsPanelProps) {
           />
           <h3 className="text-sm font-semibold text-white">Technical Indicators</h3>
           <span className="hidden sm:inline text-xs text-gray-600">
-            · {symbol} · RSI · MACD · EMA
+            · {symbol} · RSI · MACD · EMA · BB · Stoch
           </span>
         </div>
         <svg
@@ -395,6 +559,40 @@ export default function IndicatorsPanel({ symbol }: IndicatorsPanelProps) {
                   ema50={indicators.ema50}
                   ema200={indicators.ema200}
                 />
+              </div>
+
+              {/* Bollinger Bands */}
+              <div className="rounded-md border border-[#222] bg-[#0a0a0a] px-3 py-3 sm:px-4 sm:py-4">
+                {indicators.bollinger && isFinite(indicators.bollinger.upper) ? (
+                  <BollingerDisplay
+                    symbol={symbol}
+                    bollinger={indicators.bollinger}
+                    currentPrice={indicators.currentPrice}
+                  />
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-gray-300">Bollinger Bands</span>
+                      <Badge sentiment="neutral" />
+                    </div>
+                    <p className="text-[10px] text-gray-600">Insufficient price history</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Stochastic Oscillator */}
+              <div className="rounded-md border border-[#222] bg-[#0a0a0a] px-3 py-3 sm:px-4 sm:py-4">
+                {indicators.stochastic && isFinite(indicators.stochastic.k) ? (
+                  <StochasticDisplay stochastic={indicators.stochastic} />
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-gray-300">Stochastic</span>
+                      <Badge sentiment="neutral" />
+                    </div>
+                    <p className="text-[10px] text-gray-600">Insufficient price history</p>
+                  </div>
+                )}
               </div>
             </div>
           )}

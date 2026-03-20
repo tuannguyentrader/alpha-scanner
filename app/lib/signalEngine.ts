@@ -13,7 +13,7 @@ export type SignalDirection = 'BUY' | 'SELL' | 'NEUTRAL'
 export interface GeneratedSignal {
   direction: SignalDirection
   confidence: number
-  technicals: { rsi: boolean; macd: boolean; ema: boolean; sr: boolean }
+  technicals: { rsi: boolean; macd: boolean; ema: boolean; sr: boolean; bollinger: boolean; stochastic: boolean }
   reason: string
 }
 
@@ -86,6 +86,37 @@ function scoreEMA(
   return { score: 0, label: 'EMA alignment neutral' }
 }
 
+function scoreBollinger(
+  percentB: number,
+  bandwidth: number,
+): IndicatorScore {
+  if (isNaN(percentB) || isNaN(bandwidth)) return { score: 0, label: 'Bollinger unavailable' }
+  // Price below lower band = oversold (BUY), above upper band = overbought (SELL)
+  if (percentB < 0) return { score: 1, label: `BB %B ${(percentB * 100).toFixed(0)}% below lower band (oversold)` }
+  if (percentB > 1) return { score: -1, label: `BB %B ${(percentB * 100).toFixed(0)}% above upper band (overbought)` }
+  // Near edges (squeeze / bounce zone)
+  if (percentB < 0.2) return { score: 1, label: `BB %B ${(percentB * 100).toFixed(0)}% near lower band` }
+  if (percentB > 0.8) return { score: -1, label: `BB %B ${(percentB * 100).toFixed(0)}% near upper band` }
+  return { score: 0, label: `BB %B ${(percentB * 100).toFixed(0)}% mid-range` }
+}
+
+function scoreStochastic(
+  k: number,
+  d: number,
+  mode: TradingMode,
+): IndicatorScore {
+  if (isNaN(k) || isNaN(d)) return { score: 0, label: 'Stochastic unavailable' }
+  const oversold = mode === 'scalper' ? 25 : 20
+  const overbought = mode === 'scalper' ? 75 : 80
+  // Bullish: %K < oversold AND %K crosses above %D
+  if (k < oversold && k > d) return { score: 1, label: `Stoch %K ${k.toFixed(0)} oversold, bullish crossover` }
+  if (k < oversold) return { score: 1, label: `Stoch %K ${k.toFixed(0)} oversold (<${oversold})` }
+  // Bearish: %K > overbought AND %K crosses below %D
+  if (k > overbought && k < d) return { score: -1, label: `Stoch %K ${k.toFixed(0)} overbought, bearish crossover` }
+  if (k > overbought) return { score: -1, label: `Stoch %K ${k.toFixed(0)} overbought (>${overbought})` }
+  return { score: 0, label: `Stoch %K ${k.toFixed(0)} neutral` }
+}
+
 function scoreSR(
   price: number,
   support: SRLevel[],
@@ -135,26 +166,31 @@ export interface SignalInput {
 
 export function generateSignal(input: SignalInput): GeneratedSignal {
   const { indicators, support, resistance, mode, risk } = input
-  const { rsi, ema20, ema50, ema200, macd, currentPrice } = indicators
+  const { rsi, ema20, ema50, ema200, macd, currentPrice, bollinger, stochastic } = indicators
 
   // Score each indicator
   const rsiResult = scoreRSI(rsi, mode)
   const macdResult = scoreMACD(macd)
   const emaResult = scoreEMA(currentPrice, ema20, ema50, ema200, mode)
   const srResult = scoreSR(currentPrice, support, resistance)
+  const bbResult = scoreBollinger(bollinger?.percentB ?? NaN, bollinger?.bandwidth ?? NaN)
+  const stochResult = scoreStochastic(stochastic?.k ?? NaN, stochastic?.d ?? NaN, mode)
 
-  // Weighted sum (equal 25% each)
-  const weight = 0.25
+  // Weighted sum (6 indicators)
+  // Core indicators (RSI, MACD, EMA, S/R): 20% each = 80%
+  // Supplementary (Bollinger, Stochastic): 10% each = 20%
   const totalScore =
-    rsiResult.score * weight +
-    macdResult.score * weight +
-    emaResult.score * weight +
-    srResult.score * weight
+    rsiResult.score * 0.20 +
+    macdResult.score * 0.20 +
+    emaResult.score * 0.20 +
+    srResult.score * 0.20 +
+    bbResult.score * 0.10 +
+    stochResult.score * 0.10
 
   // Determine direction
   let direction: SignalDirection
-  if (totalScore > 0.25) direction = 'BUY'
-  else if (totalScore < -0.25) direction = 'SELL'
+  if (totalScore > 0.20) direction = 'BUY'
+  else if (totalScore < -0.20) direction = 'SELL'
   else direction = 'NEUTRAL'
 
   // Confidence: map |score| (0–1) to 35–95%
@@ -169,20 +205,24 @@ export function generateSignal(input: SignalInput): GeneratedSignal {
     macd: dirValue !== 0 && macdResult.score === dirValue,
     ema: dirValue !== 0 && emaResult.score === dirValue,
     sr: dirValue !== 0 && srResult.score === dirValue,
+    bollinger: dirValue !== 0 && bbResult.score === dirValue,
+    stochastic: dirValue !== 0 && stochResult.score === dirValue,
   }
 
   // Build reason string
-  const parts = [rsiResult, macdResult, emaResult, srResult]
+  const allResults = [rsiResult, macdResult, emaResult, srResult, bbResult, stochResult]
+  const parts = allResults
     .filter((r) => r.score !== 0)
     .map((r) => r.label)
 
+  const totalIndicators = 6
   let reason: string
   if (direction === 'NEUTRAL') {
     reason = 'Mixed signals — no clear directional bias. ' + parts.join('; ')
     if (parts.length === 0) reason = 'All indicators neutral — no actionable signal'
   } else {
     const agreeing = parts.length
-    reason = `${agreeing}/4 indicators align ${direction}. ` + parts.join('; ')
+    reason = `${agreeing}/${totalIndicators} indicators align ${direction}. ` + parts.join('; ')
   }
 
   return { direction, confidence, technicals, reason }

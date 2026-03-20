@@ -1,7 +1,7 @@
 project: alpha-scanner
 updated: 2026-03-20T14:05:00+08:00
 repo: https://github.com/naimkatiman/alpha-scanner
-phase: 5 # 1=frontend UI✅, 2=scanner engine✅, 3=multi-asset expansion✅, 4=broker API✅, 5=production hardening✅
+phase: 6 # 1=frontend UI✅, 2=scanner engine✅, 3=multi-asset expansion✅, 4=broker API✅, 5=production hardening✅, 6=advanced analytics🔧
 
 tasks:
   # Phase 1 — DONE
@@ -162,10 +162,40 @@ tasks:
     notes: "Build verification + git commit for Phase 5"
     output: "Clean TypeScript build (0 errors). All Phase 5 changes committed and pushed."
 
-next_actions: []
-# Previously:
-  - "Phase 5 COMPLETE. All 8 tasks (TASK-028 through TASK-035) done."
-  - "Ready for Phase 6 when approved."
+  # Phase 6 — Advanced Analytics + Social + Performance
+  - id: TASK-036
+    status: done
+    owner: coding-agent
+    notes: "Advanced Technical Indicators — Bollinger Bands (20,2), Stochastic Oscillator (14,3,3), integrate into IndicatorsPanel with visual gauges, add to signal engine as 2 new scoring factors (6 total)"
+    output: "computeBollingerBands() + computeStochastic() in technicalAnalysis.ts, AllIndicators extended, signal engine now 6-factor weighted (RSI/MACD/EMA/SR 20% each, BB/Stoch 10% each), BollingerDisplay + StochasticDisplay components with %B gauge and %K/%D gauges, SignalPanel shows 6 tech badges. Clean build."
+
+  - id: TASK-037
+    status: done
+    owner: coding-agent
+    notes: "Signal History Timeline + Win Rate Tracker — localStorage persistence (last 500 signals), SignalHistory component with filterable timeline, auto-accuracy check (TP1 hit within 24h), win rate per symbol/mode/overall"
+    output: "useSignalHistory hook (auto-record on direction change, TP1/SL accuracy checking against live price, 24h auto-expire, localStorage 500-record cap). SignalHistory component with timeline/stats tabs, filters (symbol/mode/outcome), win rate bars by symbol and mode. Clean build."
+
+  - id: TASK-038
+    status: done
+    owner: coding-agent
+    notes: "Multi-Timeframe Analysis Panel — /api/mtf route generating M15/H1/H4/D1 candles, compute indicators per timeframe, MultiTimeframe component showing 4-column direction+confidence view with confluence score"
+    output: "/api/mtf route with candle resampling to M15/H1/H4/D1, computes full 6-factor signal per timeframe, confluence scoring (direction + %). useMTF hook (60s refresh). MultiTimeframe component with 4 cards (direction/confidence/RSI/EMA per TF) + confluence meter bar. Clean build."
+
+  - id: TASK-039
+    status: done
+    owner: coding-agent
+    notes: "Signal Sharing — Share button on SignalPanel, generate styled signal card (HTML→canvas→PNG), copy-to-clipboard text format, download PNG button"
+    output: "ShareSignal component with modal (preview card + 3 actions). Copy-to-clipboard (formatted text with emoji), Download PNG (canvas-rendered 600x400 signal card at 2x DPR), Web Share API (native share on mobile). Integrated into SignalPanel header. Clean build."
+
+  - id: TASK-040
+    status: done
+    owner: coding-agent
+    notes: "Performance Analytics Dashboard — equity curve chart (canvas-based), daily equity snapshots in localStorage, drawdown visualization, profit by symbol/mode breakdown, key metrics (max drawdown%, profit factor, avg win/loss)"
+    output: "usePerformanceAnalytics hook (daily equity snapshots, trade result recording, full metrics computation). PerformanceAnalytics component with canvas equity curve (gradient fill, drawdown shading, grid labels, DPR-aware), 8 key metric cards (P&L, drawdown, profit factor, peak equity, avg win/loss, streaks), breakdown tab (profit by symbol + mode with visual bars). Clean build."
+
+next_actions:
+  - "Phase 6 COMPLETE. All 5 tasks (TASK-036 through TASK-040) done."
+  - "Ready for Phase 7 when approved."
 
 approval_pending: false
 pending_commit_summary: null

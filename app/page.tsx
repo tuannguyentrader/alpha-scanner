@@ -20,12 +20,17 @@ import { useSignals } from './hooks/useSignals'
 import { useBroker } from './hooks/useBroker'
 import { useAlerts } from './hooks/useAlerts'
 import { usePaperTrading } from './hooks/usePaperTrading'
+import { useSignalHistory } from './hooks/useSignalHistory'
+import { usePerformanceAnalytics } from './hooks/usePerformanceAnalytics'
 
 // Lazy-loaded heavy panels
 const SRLevels = lazy(() => import('./components/SRLevels'))
 const IndicatorsPanel = lazy(() => import('./components/IndicatorsPanel'))
 const AlertsPanel = lazy(() => import('./components/AlertsPanel').then(m => ({ default: m.default })))
 const PaperTrading = lazy(() => import('./components/PaperTrading'))
+const SignalHistory = lazy(() => import('./components/SignalHistory'))
+const MultiTimeframe = lazy(() => import('./components/MultiTimeframe'))
+const PerformanceAnalytics = lazy(() => import('./components/PerformanceAnalytics'))
 
 // Memoized pure display components
 const MemoSignalPanel = memo(SignalPanel)
@@ -82,6 +87,26 @@ export default function Home() {
 
   const currentPrice = prices?.[selectedSymbol]?.price ?? 0
   const direction = signal?.direction ?? 'NEUTRAL'
+
+  // Performance analytics
+  const perfAnalytics = usePerformanceAnalytics(
+    paper.equity,
+    paper.account.balance,
+    paper.unrealizedPL,
+  )
+
+  // Signal history tracking
+  const signalHistoryInput = signal && currentPrice > 0 ? {
+    symbol: selectedSymbol,
+    mode: selectedMode,
+    risk: selectedRisk,
+    direction: signal.direction,
+    confidence: signal.confidence,
+    entryPrice: currentPrice,
+    tp1: currentPrice * (signal.direction === 'BUY' ? 1.01 : 0.99), // ~1% TP1
+    sl: currentPrice * (signal.direction === 'BUY' ? 0.995 : 1.005), // ~0.5% SL
+  } : null
+  const signalHistory = useSignalHistory(signalHistoryInput, currentPrice)
 
   // Symbols with open broker positions (for highlighting in selector)
   const positionSymbols = new Set(broker.positions.map((p) => p.symbol))
@@ -262,6 +287,17 @@ export default function Home() {
               </Suspense>
             </ErrorBoundary>
 
+            {/* Performance Analytics */}
+            <ErrorBoundary fallbackTitle="Performance analytics error">
+              <Suspense fallback={<PanelSkeleton />}>
+                <PerformanceAnalytics
+                  snapshots={perfAnalytics.snapshots}
+                  metrics={perfAnalytics.metrics}
+                  onReset={perfAnalytics.resetAnalytics}
+                />
+              </Suspense>
+            </ErrorBoundary>
+
             {/* Signal alerts */}
             <ErrorBoundary fallbackTitle="Alerts error">
               <Suspense fallback={<PanelSkeleton />}>
@@ -273,6 +309,25 @@ export default function Home() {
                   onClearAlerts={alerts.clearAlerts}
                   onEnableNotifications={alerts.enableNotifications}
                 />
+              </Suspense>
+            </ErrorBoundary>
+
+            {/* Signal History */}
+            <ErrorBoundary fallbackTitle="Signal history error">
+              <Suspense fallback={<PanelSkeleton />}>
+                <SignalHistory
+                  records={signalHistory.records}
+                  stats={signalHistory.stats}
+                  onClear={signalHistory.clearHistory}
+                  getFilteredRecords={signalHistory.getFilteredRecords}
+                />
+              </Suspense>
+            </ErrorBoundary>
+
+            {/* Multi-Timeframe Analysis */}
+            <ErrorBoundary fallbackTitle="Multi-timeframe error">
+              <Suspense fallback={<PanelSkeleton />}>
+                <MultiTimeframe symbol={selectedSymbol} />
               </Suspense>
             </ErrorBoundary>
 

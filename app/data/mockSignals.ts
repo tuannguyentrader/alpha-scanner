@@ -17,6 +17,8 @@ export interface SignalData {
     macd: boolean
     ema: boolean
     sr: boolean
+    bollinger?: boolean
+    stochastic?: boolean
   }
   reason: string
 }

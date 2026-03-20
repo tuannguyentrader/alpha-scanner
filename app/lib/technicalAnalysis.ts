@@ -105,6 +105,78 @@ export function calculateATR(
   return atr
 }
 
+/* ── Bollinger Bands (SMA-based) ──────────────────────────────────────────── */
+
+export interface BollingerBands {
+  upper: number
+  middle: number
+  lower: number
+  bandwidth: number // (upper - lower) / middle
+  percentB: number  // (price - lower) / (upper - lower)
+}
+
+export function computeBollingerBands(closes: number[], period = 20, stdDevMult = 2): BollingerBands {
+  const nanResult: BollingerBands = { upper: NaN, middle: NaN, lower: NaN, bandwidth: NaN, percentB: NaN }
+  if (closes.length < period) return nanResult
+
+  const slice = closes.slice(-period)
+  const sma = slice.reduce((a, b) => a + b, 0) / period
+  const variance = slice.reduce((sum, v) => sum + (v - sma) ** 2, 0) / period
+  const stdDev = Math.sqrt(variance)
+
+  const upper = sma + stdDevMult * stdDev
+  const lower = sma - stdDevMult * stdDev
+  const currentPrice = closes[closes.length - 1]
+  const bandwidth = sma > 0 ? (upper - lower) / sma : 0
+  const percentB = upper !== lower ? (currentPrice - lower) / (upper - lower) : 0.5
+
+  return { upper, middle: sma, lower, bandwidth, percentB }
+}
+
+/* ── Stochastic Oscillator ────────────────────────────────────────────────── */
+
+export interface StochasticResult {
+  k: number  // %K (fast)
+  d: number  // %D (signal, SMA of %K)
+}
+
+export function computeStochastic(
+  candles: Array<{ high: number; low: number; close: number }>,
+  kPeriod = 14,
+  dPeriod = 3,
+  smooth = 3,
+): StochasticResult {
+  const nanResult: StochasticResult = { k: NaN, d: NaN }
+  if (candles.length < kPeriod + smooth + dPeriod - 2) return nanResult
+
+  // Compute raw %K values
+  const rawK: number[] = []
+  for (let i = kPeriod - 1; i < candles.length; i++) {
+    const slice = candles.slice(i - kPeriod + 1, i + 1)
+    const highest = Math.max(...slice.map((c) => c.high))
+    const lowest = Math.min(...slice.map((c) => c.low))
+    const range = highest - lowest
+    const close = candles[i].close
+    rawK.push(range > 0 ? ((close - lowest) / range) * 100 : 50)
+  }
+
+  // Smooth raw %K with SMA(smooth) → slow %K
+  const smoothedK: number[] = []
+  for (let i = smooth - 1; i < rawK.length; i++) {
+    const avg = rawK.slice(i - smooth + 1, i + 1).reduce((a, b) => a + b, 0) / smooth
+    smoothedK.push(avg)
+  }
+
+  if (smoothedK.length < dPeriod) return nanResult
+
+  // %D = SMA(dPeriod) of smoothed %K
+  const dSlice = smoothedK.slice(-dPeriod)
+  const d = dSlice.reduce((a, b) => a + b, 0) / dPeriod
+  const k = smoothedK[smoothedK.length - 1]
+
+  return { k, d }
+}
+
 /* ── All-in-one ───────────────────────────────────────────────────────────── */
 
 export interface AllIndicators {
@@ -114,11 +186,20 @@ export interface AllIndicators {
   ema200: number
   macd: { macdLine: number; signalLine: number; histogram: number }
   currentPrice: number
+  bollinger: BollingerBands
+  stochastic: StochasticResult
 }
 
-export function computeAllIndicators(candles: Array<{ close: number }>): AllIndicators {
+export function computeAllIndicators(candles: Array<{ close: number; high?: number; low?: number }>): AllIndicators {
   const closes = candles.map((c) => c.close)
   const currentPrice = closes[closes.length - 1] ?? NaN
+
+  // Build OHLC array for stochastic (use close as fallback for high/low)
+  const ohlc = candles.map((c) => ({
+    high: c.high ?? c.close,
+    low: c.low ?? c.close,
+    close: c.close,
+  }))
 
   return {
     rsi: computeRSI(closes),
@@ -127,5 +208,7 @@ export function computeAllIndicators(candles: Array<{ close: number }>): AllIndi
     ema200: computeEMA(closes, 200),
     macd: computeMACD(closes),
     currentPrice,
+    bollinger: computeBollingerBands(closes),
+    stochastic: computeStochastic(ohlc),
   }
 }

@@ -3,6 +3,7 @@
 import { buildSignal, fmt, fmtPips } from '../data/mockSignals'
 import type { TradingMode, RiskProfile } from '../data/mockSignals'
 import { useSignals } from '../hooks/useSignals'
+import ShareSignal from './ShareSignal'
 
 interface SignalPanelProps {
   symbol: string
@@ -171,6 +172,7 @@ export default function SignalPanel({ symbol, mode, risk, loading = false }: Sig
   const dirColor = getDirectionColor(direction)
   const slDistance = Math.abs(entryPrice - stopLoss)
   const rrRatio = (Math.abs(tp1 - entryPrice) / slDistance).toFixed(2)
+  const totalTechCount = Object.keys(technicals).length
   const agreingCount = Object.values(technicals).filter(Boolean).length
 
   const glowClass = getGlowClass(direction)
@@ -210,13 +212,25 @@ export default function SignalPanel({ symbol, mode, risk, loading = false }: Sig
           </p>
         </div>
         <div className="flex flex-col items-end gap-1 flex-shrink-0">
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: dirColor, boxShadow: `0 0 6px ${dirColor}` }}
-            aria-hidden="true"
-          />
+          <div className="flex items-center gap-2">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: dirColor, boxShadow: `0 0 6px ${dirColor}` }}
+              aria-hidden="true"
+            />
+            <ShareSignal
+              symbol={symbol}
+              direction={direction}
+              confidence={confidence}
+              mode={mode}
+              risk={risk}
+              entryPrice={entryPrice}
+              technicals={technicals}
+              reason={reason}
+            />
+          </div>
           <span className="text-[10px] text-gray-600 whitespace-nowrap">
-            {agreingCount}/4 signals
+            {agreingCount}/{totalTechCount} signals
           </span>
         </div>
       </div>
@@ -245,6 +259,8 @@ export default function SignalPanel({ symbol, mode, risk, loading = false }: Sig
           <TechBadge label="MACD" active={technicals.macd} />
           <TechBadge label="EMA" active={technicals.ema} />
           <TechBadge label="S/R" active={technicals.sr} />
+          <TechBadge label="BB" active={technicals.bollinger ?? false} />
+          <TechBadge label="Stoch" active={technicals.stochastic ?? false} />
         </div>
       </div>
 
