@@ -21,7 +21,11 @@ export interface SignalData {
   reason: string
 }
 
-/* ── Base prices ─────────────────────────────────────────────────────────────── */
+/* ── Re-exports from centralized registry (backward compat) ──────────────── */
+
+export { getPipSize, fmt, fmtPips, getBasePrice } from '../lib/symbols'
+
+/* ── Base prices (all 12 symbols) ───────────────────────────────────────────── */
 
 export const BASE_PRICES: Record<string, number> = {
   XAUUSD: 2920,
@@ -29,48 +33,21 @@ export const BASE_PRICES: Record<string, number> = {
   BTCUSD: 84000,
   ETHUSD: 1920,
   XRPUSD: 2.35,
-}
-
-export function getBasePrice(
-  symbol: string,
-  livePrices?: Record<string, { price: number }>,
-): number {
-  return livePrices?.[symbol]?.price ?? BASE_PRICES[symbol] ?? 100
-}
-
-/* ── Pip size ────────────────────────────────────────────────────────────────── */
-
-export function getPipSize(symbol: string): number {
-  if (symbol === 'BTCUSD') return 10
-  if (symbol === 'ETHUSD') return 0.5
-  if (symbol === 'XRPUSD') return 0.0001
-  if (symbol === 'XAGUSD') return 0.01
-  return 0.1 // XAUUSD
-}
-
-/* ── Formatting helpers ──────────────────────────────────────────────────────── */
-
-export function fmt(symbol: string, price: number): string {
-  if (symbol === 'BTCUSD')
-    return price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-  if (symbol === 'ETHUSD')
-    return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  if (symbol === 'XRPUSD') return price.toFixed(4)
-  if (symbol === 'XAGUSD') return price.toFixed(2)
-  return price.toFixed(2)
-}
-
-export function fmtPips(symbol: string, distance: number): string {
-  const pipSize = getPipSize(symbol)
-  const pips = Math.round(Math.abs(distance) / pipSize)
-  if (symbol === 'BTCUSD') return `${pips.toLocaleString()} pts`
-  return `${pips} pips`
+  SOLUSD: 145,
+  DOGEUSD: 0.17,
+  ADAUSD: 0.72,
+  EURUSD: 1.085,
+  GBPUSD: 1.265,
+  USDJPY: 149.5,
+  AUDUSD: 0.652,
 }
 
 /* ── Position sizing helper ──────────────────────────────────────────────────── */
 
+import { getPipSize as _getPipSize } from '../lib/symbols'
+
 export function pipValue(symbol: string, capital: number, leverage: number): string {
-  const pip = getPipSize(symbol)
+  const pip = _getPipSize(symbol)
   const price = BASE_PRICES[symbol] ?? 100
   const lotValue = (capital * leverage) / price
   const val = lotValue * pip
@@ -221,6 +198,188 @@ const SIGNAL_MATRIX: Record<string, CombinationSeed> = {
     technicals: { rsi: false, macd: false, ema: true, sr: true },
     timestamp: '3 min ago',
     reason: 'Support bounce scalp at EMA confluence and prior resistance-turned-support level',
+  },
+
+  // ── SOLUSD ────────────────────────────────────────────────────────────────────
+  'SOLUSD:swing': {
+    direction: 'BUY',
+    slPct: 0.005,
+    baseConf: 73,
+    technicals: { rsi: true, macd: true, ema: true, sr: false },
+    timestamp: '9 min ago',
+    reason: 'SOL breaking above weekly consolidation; RSI 55 with MACD bullish crossover on daily',
+  },
+  'SOLUSD:intraday': {
+    direction: 'SELL',
+    slPct: 0.002,
+    baseConf: 70,
+    technicals: { rsi: true, macd: true, ema: false, sr: true },
+    timestamp: '5 min ago',
+    reason: 'Failed test of $150 resistance; RSI 69 with bearish divergence and volume fade',
+  },
+  'SOLUSD:scalper': {
+    direction: 'BUY',
+    slPct: 0.0008,
+    baseConf: 68,
+    technicals: { rsi: false, macd: true, ema: true, sr: true },
+    timestamp: '2 min ago',
+    reason: 'Quick scalp off EMA20 support; MACD histogram positive and price holding pivot zone',
+  },
+
+  // ── DOGEUSD ───────────────────────────────────────────────────────────────────
+  'DOGEUSD:swing': {
+    direction: 'SELL',
+    slPct: 0.007,
+    baseConf: 58,
+    technicals: { rsi: true, macd: false, ema: false, sr: true },
+    timestamp: '14 min ago',
+    reason: 'DOGE at key resistance after speculative pump; RSI 68 weakening with low volume',
+  },
+  'DOGEUSD:intraday': {
+    direction: 'BUY',
+    slPct: 0.003,
+    baseConf: 62,
+    technicals: { rsi: true, macd: true, ema: false, sr: false },
+    timestamp: '6 min ago',
+    reason: 'Intraday oversold bounce; RSI 31 with MACD histogram turning positive on 1H',
+  },
+  'DOGEUSD:scalper': {
+    direction: 'BUY',
+    slPct: 0.001,
+    baseConf: 55,
+    technicals: { rsi: false, macd: false, ema: true, sr: true },
+    timestamp: '3 min ago',
+    reason: 'Micro support hold at EMA cluster; low conviction scalp with tight risk management',
+  },
+
+  // ── ADAUSD ────────────────────────────────────────────────────────────────────
+  'ADAUSD:swing': {
+    direction: 'BUY',
+    slPct: 0.006,
+    baseConf: 66,
+    technicals: { rsi: true, macd: true, ema: false, sr: true },
+    timestamp: '11 min ago',
+    reason: 'ADA retesting breakout zone as support; RSI 48 with MACD curling bullish on daily',
+  },
+  'ADAUSD:intraday': {
+    direction: 'SELL',
+    slPct: 0.0025,
+    baseConf: 64,
+    technicals: { rsi: true, macd: false, ema: true, sr: true },
+    timestamp: '7 min ago',
+    reason: 'Rejection at $0.75 resistance; RSI 66 declining with price below EMA50 on 4H',
+  },
+  'ADAUSD:scalper': {
+    direction: 'SELL',
+    slPct: 0.001,
+    baseConf: 59,
+    technicals: { rsi: false, macd: true, ema: false, sr: true },
+    timestamp: '4 min ago',
+    reason: 'Scalp short from minor resistance; MACD rolling over with negative delta pressure',
+  },
+
+  // ── EURUSD ────────────────────────────────────────────────────────────────────
+  'EURUSD:swing': {
+    direction: 'BUY',
+    slPct: 0.004,
+    baseConf: 74,
+    technicals: { rsi: true, macd: true, ema: true, sr: false },
+    timestamp: '8 min ago',
+    reason: 'EUR recovering on ECB hawkish tone; RSI 54 rising with MACD bullish cross on daily',
+  },
+  'EURUSD:intraday': {
+    direction: 'SELL',
+    slPct: 0.0015,
+    baseConf: 68,
+    technicals: { rsi: true, macd: false, ema: true, sr: true },
+    timestamp: '4 min ago',
+    reason: 'Intraday rejection at 1.0900 supply zone; RSI 67 bearish divergence on 1H',
+  },
+  'EURUSD:scalper': {
+    direction: 'BUY',
+    slPct: 0.0006,
+    baseConf: 65,
+    technicals: { rsi: false, macd: true, ema: true, sr: true },
+    timestamp: '1 min ago',
+    reason: 'Quick long from EMA confluence support; MACD positive momentum and tight S/R hold',
+  },
+
+  // ── GBPUSD ────────────────────────────────────────────────────────────────────
+  'GBPUSD:swing': {
+    direction: 'SELL',
+    slPct: 0.005,
+    baseConf: 70,
+    technicals: { rsi: true, macd: true, ema: false, sr: true },
+    timestamp: '10 min ago',
+    reason: 'GBP weakening on soft UK data; RSI 62 with MACD bearish crossover near 1.2700 key level',
+  },
+  'GBPUSD:intraday': {
+    direction: 'BUY',
+    slPct: 0.0018,
+    baseConf: 72,
+    technicals: { rsi: true, macd: true, ema: true, sr: false },
+    timestamp: '5 min ago',
+    reason: 'Intraday support hold at 1.2600; RSI 38 reversing with MACD positive cross on 1H',
+  },
+  'GBPUSD:scalper': {
+    direction: 'SELL',
+    slPct: 0.0007,
+    baseConf: 63,
+    technicals: { rsi: false, macd: true, ema: false, sr: true },
+    timestamp: '2 min ago',
+    reason: 'Short scalp at minor resistance; MACD rolling negative with momentum fade on 5M',
+  },
+
+  // ── USDJPY ────────────────────────────────────────────────────────────────────
+  'USDJPY:swing': {
+    direction: 'BUY',
+    slPct: 0.004,
+    baseConf: 77,
+    technicals: { rsi: true, macd: true, ema: true, sr: true },
+    timestamp: '6 min ago',
+    reason: 'USD strength on Fed hawkish hold; RSI 58 with MACD bullish and price above EMA50/200',
+  },
+  'USDJPY:intraday': {
+    direction: 'BUY',
+    slPct: 0.0015,
+    baseConf: 69,
+    technicals: { rsi: true, macd: false, ema: true, sr: true },
+    timestamp: '3 min ago',
+    reason: 'Pullback buy at 149.00 support; RSI 46 recovering and price bouncing off EMA20',
+  },
+  'USDJPY:scalper': {
+    direction: 'SELL',
+    slPct: 0.0006,
+    baseConf: 66,
+    technicals: { rsi: false, macd: true, ema: false, sr: true },
+    timestamp: '1 min ago',
+    reason: 'Scalp short from 149.80 intraday resistance; MACD histogram turning negative on 5M',
+  },
+
+  // ── AUDUSD ────────────────────────────────────────────────────────────────────
+  'AUDUSD:swing': {
+    direction: 'SELL',
+    slPct: 0.005,
+    baseConf: 63,
+    technicals: { rsi: true, macd: false, ema: false, sr: true },
+    timestamp: '13 min ago',
+    reason: 'AUD under pressure from weak China data; RSI 57 declining below supply zone at 0.6600',
+  },
+  'AUDUSD:intraday': {
+    direction: 'SELL',
+    slPct: 0.0018,
+    baseConf: 65,
+    technicals: { rsi: true, macd: true, ema: false, sr: false },
+    timestamp: '6 min ago',
+    reason: 'Momentum short on failed rally; RSI 63 with MACD bearish crossover on 4H chart',
+  },
+  'AUDUSD:scalper': {
+    direction: 'BUY',
+    slPct: 0.0007,
+    baseConf: 60,
+    technicals: { rsi: false, macd: false, ema: true, sr: true },
+    timestamp: '2 min ago',
+    reason: 'Micro bounce scalp at EMA support; price stalling at prior support-turned-resistance',
   },
 }
 

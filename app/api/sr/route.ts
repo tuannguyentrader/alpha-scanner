@@ -16,7 +16,8 @@ export interface SRResponse {
 const srCache = new Map<string, { data: SRResponse; expiresAt: number }>()
 const CACHE_TTL = 2 * 60_000
 
-const VALID_SYMBOLS = ['XAUUSD', 'XAGUSD', 'BTCUSD', 'ETHUSD', 'XRPUSD']
+import { getAllSymbols } from '@/app/lib/symbols'
+const VALID_SYMBOLS = getAllSymbols().map((s) => s.symbol)
 
 /* ── SR computation ───────────────────────────────────────────────────────── */
 

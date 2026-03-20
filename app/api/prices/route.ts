@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { SYMBOL_REGISTRY } from '@/app/lib/symbols'
 
 export interface SymbolPrice {
   price: number
@@ -11,15 +12,11 @@ export interface PricesResponse {
   source: string
 }
 
-/* ── Fallback prices ──────────────────────────────────────────────────────── */
+/* ── Fallback prices from registry ────────────────────────────────────────── */
 
-const FALLBACK_PRICES: Record<string, SymbolPrice> = {
-  XAUUSD: { price: 2920, change24h: 0 },
-  XAGUSD: { price: 32.5, change24h: 0 },
-  BTCUSD: { price: 84000, change24h: 0 },
-  ETHUSD: { price: 1920, change24h: 0 },
-  XRPUSD: { price: 2.35, change24h: 0 },
-}
+const FALLBACK_PRICES: Record<string, SymbolPrice> = Object.fromEntries(
+  SYMBOL_REGISTRY.map((s) => [s.symbol, { price: s.fallbackPrice, change24h: 0 }]),
+)
 
 /* ── In-memory cache ──────────────────────────────────────────────────────── */
 
@@ -29,20 +26,26 @@ const CACHE_TTL = 30_000
 /* ── Fetchers ─────────────────────────────────────────────────────────────── */
 
 async function fetchCryptoPrices(): Promise<Record<string, SymbolPrice>> {
-  const url =
-    'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,ripple&vs_currencies=usd&include_24hr_change=true'
+  const ids = SYMBOL_REGISTRY.filter((s) => s.dataSourceType === 'coingecko' && s.coingeckoId)
+    .map((s) => s.coingeckoId)
+    .join(',')
+
+  const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`
   const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
   if (!res.ok) throw new Error(`CoinGecko ${res.status}`)
-  const data = (await res.json()) as {
-    bitcoin: { usd: number; usd_24h_change?: number }
-    ethereum: { usd: number; usd_24h_change?: number }
-    ripple: { usd: number; usd_24h_change?: number }
+  const data = (await res.json()) as Record<string, { usd: number; usd_24h_change?: number }>
+
+  const result: Record<string, SymbolPrice> = {}
+  for (const cfg of SYMBOL_REGISTRY.filter((s) => s.dataSourceType === 'coingecko')) {
+    const id = cfg.coingeckoId
+    if (id && data[id]) {
+      result[cfg.symbol] = {
+        price: data[id].usd,
+        change24h: data[id].usd_24h_change ?? 0,
+      }
+    }
   }
-  return {
-    BTCUSD: { price: data.bitcoin.usd, change24h: data.bitcoin.usd_24h_change ?? 0 },
-    ETHUSD: { price: data.ethereum.usd, change24h: data.ethereum.usd_24h_change ?? 0 },
-    XRPUSD: { price: data.ripple.usd, change24h: data.ripple.usd_24h_change ?? 0 },
-  }
+  return result
 }
 
 async function fetchMetalsPrimary(): Promise<Record<string, SymbolPrice>> {
@@ -87,6 +90,25 @@ async function fetchMetalsSecondary(): Promise<Record<string, SymbolPrice>> {
   }
 }
 
+async function fetchForexPrices(): Promise<Record<string, SymbolPrice>> {
+  // fawazahmed0 currency API: fetch USD rates to derive forex pairs
+  const res = await fetch(
+    'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json',
+    { signal: AbortSignal.timeout(8000) },
+  )
+  if (!res.ok) throw new Error(`currency-api forex ${res.status}`)
+  const data = (await res.json()) as { usd: Record<string, number> }
+  const usd = data.usd
+
+  const result: Record<string, SymbolPrice> = {}
+  if (usd.eur && usd.eur > 0) result.EURUSD = { price: 1 / usd.eur, change24h: 0 }
+  if (usd.gbp && usd.gbp > 0) result.GBPUSD = { price: 1 / usd.gbp, change24h: 0 }
+  if (usd.jpy && usd.jpy > 0) result.USDJPY = { price: usd.jpy, change24h: 0 }
+  if (usd.aud && usd.aud > 0) result.AUDUSD = { price: 1 / usd.aud, change24h: 0 }
+
+  return result
+}
+
 /* ── Main fetch orchestrator ─────────────────────────────────────────────── */
 
 async function fetchAllPrices(): Promise<PricesResponse> {
@@ -99,9 +121,9 @@ async function fetchAllPrices(): Promise<PricesResponse> {
     Object.assign(prices, crypto)
     sources.push('coingecko')
   } catch {
-    prices.BTCUSD = FALLBACK_PRICES.BTCUSD
-    prices.ETHUSD = FALLBACK_PRICES.ETHUSD
-    prices.XRPUSD = FALLBACK_PRICES.XRPUSD
+    for (const cfg of SYMBOL_REGISTRY.filter((s) => s.dataSourceType === 'coingecko')) {
+      prices[cfg.symbol] = FALLBACK_PRICES[cfg.symbol]
+    }
     sources.push('fallback-crypto')
   }
 
@@ -120,6 +142,18 @@ async function fetchAllPrices(): Promise<PricesResponse> {
       prices.XAGUSD = FALLBACK_PRICES.XAGUSD
       sources.push('fallback-metals')
     }
+  }
+
+  // Forex
+  try {
+    const forex = await fetchForexPrices()
+    Object.assign(prices, forex)
+    sources.push('currency-api-forex')
+  } catch {
+    for (const cfg of SYMBOL_REGISTRY.filter((s) => s.dataSourceType === 'forex-api')) {
+      prices[cfg.symbol] = FALLBACK_PRICES[cfg.symbol]
+    }
+    sources.push('fallback-forex')
   }
 
   return { prices, timestamp: Date.now(), source: sources.join('+') }

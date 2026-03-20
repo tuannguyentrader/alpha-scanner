@@ -11,7 +11,8 @@ import type { TpSlResult } from '@/app/lib/tpslEngine'
 const tpslCache = new Map<string, { data: TpSlResult; expiresAt: number }>()
 const CACHE_TTL = 30_000
 
-const VALID_SYMBOLS = ['XAUUSD', 'XAGUSD', 'BTCUSD', 'ETHUSD', 'XRPUSD']
+import { getAllSymbols } from '@/app/lib/symbols'
+const VALID_SYMBOLS = getAllSymbols().map((s) => s.symbol)
 const VALID_MODES: TradingMode[] = ['swing', 'intraday', 'scalper']
 const VALID_RISKS: RiskProfile[] = ['conservative', 'balanced', 'high-risk']
 const VALID_DIRECTIONS = ['BUY', 'SELL', 'NEUTRAL'] as const

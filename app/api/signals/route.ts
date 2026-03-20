@@ -20,7 +20,8 @@ export interface SignalsResponse {
 const signalCache = new Map<string, { data: SignalsResponse; expiresAt: number }>()
 const CACHE_TTL = 30_000 // 30 seconds
 
-const VALID_SYMBOLS = ['XAUUSD', 'XAGUSD', 'BTCUSD', 'ETHUSD', 'XRPUSD']
+import { getAllSymbols } from '@/app/lib/symbols'
+const VALID_SYMBOLS = getAllSymbols().map((s) => s.symbol)
 const VALID_MODES: TradingMode[] = ['swing', 'intraday', 'scalper']
 const VALID_RISKS: RiskProfile[] = ['conservative', 'balanced', 'high-risk']
 

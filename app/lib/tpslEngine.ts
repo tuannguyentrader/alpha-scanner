@@ -2,7 +2,7 @@
 // Pure functions — no side effects, no network calls.
 // Computes entry, SL, TP1/2/3 via ATR + Fibonacci extensions + S/R snapping.
 
-import { getPipSize } from '../data/mockSignals'
+import { getPipSize } from './symbols'
 import type { TradingMode, RiskProfile } from '../data/mockSignals'
 import type { SRLevel } from './supportResistance'
 

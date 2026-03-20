@@ -13,7 +13,8 @@ export interface IndicatorsResponse {
 const indicatorsCache = new Map<string, { data: IndicatorsResponse; expiresAt: number }>()
 const CACHE_TTL = 60_000 // 60 seconds
 
-const VALID_SYMBOLS = ['XAUUSD', 'XAGUSD', 'BTCUSD', 'ETHUSD', 'XRPUSD']
+import { getAllSymbols } from '@/app/lib/symbols'
+const VALID_SYMBOLS = getAllSymbols().map((s) => s.symbol)
 
 /* ── Compute indicators for a symbol ─────────────────────────────────────── */
 
