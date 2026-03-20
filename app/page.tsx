@@ -10,6 +10,7 @@ import SignalPanel from './components/SignalPanel'
 import TpSlDisplay from './components/TpSlDisplay'
 import SettingsPanel, { DEFAULT_SETTINGS, type ScannerSettings } from './components/SettingsPanel'
 import SRLevels from './components/SRLevels'
+import IndicatorsPanel from './components/IndicatorsPanel'
 import { usePrices } from './hooks/usePrices'
 
 type ConnectionStatus = 'loading' | 'live' | 'stale' | 'error'
@@ -156,6 +157,9 @@ export default function Home() {
 
             {/* Third row: Support & Resistance */}
             <SRLevels symbol={selectedSymbol} />
+
+            {/* Fourth row: Technical Indicators */}
+            <IndicatorsPanel symbol={selectedSymbol} />
           </div>
         </main>
       </div>

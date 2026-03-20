@@ -1,0 +1,50 @@
+import { NextResponse } from 'next/server'
+import { fetchHistory } from '@/app/api/history/route'
+import { computeAllIndicators, type AllIndicators } from '@/app/lib/technicalAnalysis'
+
+export interface IndicatorsResponse {
+  symbol: string
+  indicators: AllIndicators
+  source: string
+}
+
+/* ── In-memory cache ──────────────────────────────────────────────────────── */
+
+const indicatorsCache = new Map<string, { data: IndicatorsResponse; expiresAt: number }>()
+const CACHE_TTL = 60_000 // 60 seconds
+
+const VALID_SYMBOLS = ['XAUUSD', 'XAGUSD', 'BTCUSD', 'ETHUSD', 'XRPUSD']
+
+/* ── Compute indicators for a symbol ─────────────────────────────────────── */
+
+export async function computeIndicatorsForSymbol(symbol: string): Promise<IndicatorsResponse> {
+  const now = Date.now()
+  const cached = indicatorsCache.get(symbol)
+  if (cached && cached.expiresAt > now) return cached.data
+
+  const { candles, source } = await fetchHistory(symbol)
+  const indicators = computeAllIndicators(candles)
+
+  const data: IndicatorsResponse = { symbol, indicators, source }
+  indicatorsCache.set(symbol, { data, expiresAt: now + CACHE_TTL })
+  return data
+}
+
+/* ── Route handler ────────────────────────────────────────────────────────── */
+
+export async function GET(request: Request): Promise<Response> {
+  const { searchParams } = new URL(request.url)
+  const symbol = searchParams.get('symbol')?.toUpperCase()
+
+  if (!symbol || !VALID_SYMBOLS.includes(symbol)) {
+    return NextResponse.json({ error: 'Invalid symbol' }, { status: 400 })
+  }
+
+  try {
+    const data = await computeIndicatorsForSymbol(symbol)
+    return NextResponse.json(data)
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+}

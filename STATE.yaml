@@ -50,7 +50,7 @@ tasks:
     output: "S/R detection engine with pivot clustering algo, history API (CoinGecko OHLC + synthetic metals), /api/sr route, useSR hook (60s refresh), SRLevels visual component (price ladder with strength bars). Commit 97f940f."
 
   - id: TASK-013
-    status: pending
+    status: in_progress
     owner: pm-alpha-scanner
     notes: "Technical indicator calculations — RSI, MACD, EMA (20/50/200). Compute from real price data instead of mock values."
     output: null
