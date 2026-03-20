@@ -1,5 +1,5 @@
 project: alpha-scanner
-updated: 2026-03-20T06:37:00+08:00
+updated: 2026-03-20T10:40:00+08:00
 repo: https://github.com/naimkatiman/alpha-scanner
 phase: 2 # 1=frontend UI✅, 2=scanner engine, 3=multi-asset, 4=broker API
 
@@ -62,13 +62,13 @@ tasks:
     output: "Signal engine with weighted RSI/MACD/EMA/S&R scoring, /api/signals route (30s cache), useSignals hook, SignalPanel wired to live data with NEUTRAL support. Commit 7c18f63."
 
   - id: TASK-015
-    status: in_progress
+    status: done
     owner: pm-alpha-scanner
     notes: "TP/SL calculation engine — compute entry, TP1/2/3 (Fibonacci extensions), SL based on risk profile + leverage + volatility. Replace hardcoded values."
-    output: null
+    output: "TP/SL engine with ATR-based SL (mode multipliers: swing=2×, intraday=1.5×, scalper=1×), S/R snapping (within 1.2×ATR), Fibonacci TPs (1.618/2.618/4.236), real position sizing. /api/tpsl route (30s cache), useTpSl hook, TpSlDisplay wired to live data with LIVE badge + shimmer. NEUTRAL: 0.75× tighter SL, TP1 at 1.272 Fib. Commit b837cfe."
 
 next_actions:
-  - "pm-alpha-scanner: Building TASK-015 (TP/SL calculation engine)"
+  - "Phase 2 COMPLETE. All 5 tasks (TASK-011 through TASK-015) done. Ready for Phase 3 (multi-asset expansion)."
 
 approval_pending: false
 pending_commit_summary: null
