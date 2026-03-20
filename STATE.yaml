@@ -115,16 +115,16 @@ tasks:
 
   # Phase 5 — Production Hardening + Mobile Polish
   - id: TASK-028
-    status: in-progress
+    status: done
     owner: coding-agent
     notes: "Error handling — ErrorBoundary component, loading skeletons for all panels, retry logic with exponential backoff in all hooks"
-    output: null
+    output: "ErrorBoundary with retry button, per-panel error isolation, fetchWithRetry utility (exponential backoff + 429 handling), all 6 data hooks updated, loading skeletons, React.lazy/Suspense/memo, StaleIndicator, PWA manifest+SW, SEO (sitemap/robots/og), API rate limit middleware, input sanitization. Commit 2237584."
 
   - id: TASK-029
-    status: pending
+    status: done
     owner: coding-agent
     notes: "Rate limit handling — detect 429/rate limits from CoinGecko/fawazahmed0, serve cached data with stale indicator, backoff timer"
-    output: null
+    output: "Rate limit detection in /api/prices (rateLimitedUntil flag, serves cached data with rateLimited+staleSince fields), StaleIndicator component shows CACHED badge, usePrices auto-slows to 120s interval when rate-limited, fetchWithRetry handles 429+Retry-After. Commit 2237584."
 
   - id: TASK-030
     status: pending
@@ -133,28 +133,28 @@ tasks:
     output: null
 
   - id: TASK-031
-    status: pending
+    status: done
     owner: coding-agent
     notes: "Performance — React.lazy + Suspense for heavy panels (IndicatorsPanel, PaperTrading, AlertsPanel), debounce rapid updates, React.memo where needed"
-    output: null
+    output: "React.lazy for SRLevels, IndicatorsPanel, AlertsPanel, PaperTrading. Suspense with PanelSkeleton fallback. React.memo for SignalPanel, TpSlDisplay, PositionsPanel. usePrices dedup with inFlightRef. Commit 2237584."
 
   - id: TASK-032
-    status: pending
+    status: done
     owner: coding-agent
     notes: "PWA support — manifest.json, service worker, icons, install prompt, offline fallback page"
-    output: null
+    output: "manifest.json (standalone, dark theme, 192+512 icons), sw.js (cache-first for static, network-first for API, offline fallback), offline.html, ServiceWorkerRegistrar component in layout. Commit 2237584."
 
   - id: TASK-033
-    status: pending
+    status: done
     owner: coding-agent
     notes: "SEO + metadata — og:title, og:description, og:image placeholder, favicon, per-route page titles, robots.txt, sitemap"
-    output: null
+    output: "layout.tsx metadata (og:title, og:description, og:image, manifest link), sitemap.ts (dynamic generation), robots.txt, og-image.png placeholder, icon.svg favicon. Commit 2237584."
 
   - id: TASK-034
-    status: pending
+    status: done
     owner: coding-agent
     notes: "Security — sanitize all user inputs (broker form, settings), rate limit API routes (in-memory token bucket), CSP headers in next.config"
-    output: null
+    output: "rateLimit.ts (token bucket: 60 req/min/IP with cleanup), apiGuard.ts (checkRateLimit helper with 429+Retry-After headers), sanitize.ts (input sanitization), all 10 API routes protected with checkRateLimit. Commit 2237584."
 
   - id: TASK-035
     status: pending
@@ -163,8 +163,8 @@ tasks:
     output: null
 
 next_actions:
-  - "Phase 5 IN PROGRESS — executing TASK-028 through TASK-035"
-  - "Coding agent spawned for implementation"
+  - "TASK-030 (mobile polish) — next task to execute"
+  - "TASK-035 (build verification + final commit) — after TASK-030"
 
 approval_pending: false
 pending_commit_summary: null
