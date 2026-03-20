@@ -115,9 +115,9 @@ function MetricCard({ label, value, color = 'text-white', sub }: {
 }) {
   return (
     <div className="rounded border border-[#222] bg-[#1a1a1a] p-3">
-      <div className="text-[9px] uppercase tracking-widest text-gray-600 mb-1">{label}</div>
+      <div className="text-[9px] uppercase tracking-widest text-zinc-600 mb-1">{label}</div>
       <div className={`font-mono text-lg font-bold ${color}`}>{value}</div>
-      {sub && <div className="text-[9px] text-gray-600 mt-0.5">{sub}</div>}
+      {sub && <div className="text-[9px] text-zinc-600 mt-0.5">{sub}</div>}
     </div>
   )
 }
@@ -126,14 +126,14 @@ function MetricCard({ label, value, color = 'text-white', sub }: {
 
 function TradesTable({ trades, symbol }: { trades: BacktestTrade[]; symbol: string }) {
   if (trades.length === 0) {
-    return <div className="text-center text-gray-600 py-8 text-xs">No trades to display</div>
+    return <div className="text-center text-zinc-600 py-8 text-xs">No trades to display</div>
   }
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-[10px]">
         <thead>
-          <tr className="border-b border-[#222] text-gray-500">
+          <tr className="border-b border-[#222] text-zinc-500">
             <th className="px-2 py-2 text-left font-medium">#</th>
             <th className="px-2 py-2 text-left font-medium">Dir</th>
             <th className="px-2 py-2 text-right font-medium">Entry</th>
@@ -145,18 +145,18 @@ function TradesTable({ trades, symbol }: { trades: BacktestTrade[]; symbol: stri
         <tbody>
           {trades.slice(-20).reverse().map((t) => (
             <tr key={t.id} className="border-b border-[#1a1a1a] hover:bg-[#1a1a1a] transition-colors">
-              <td className="px-2 py-1.5 text-gray-500">{t.id}</td>
+              <td className="px-2 py-1.5 text-zinc-500">{t.id}</td>
               <td className="px-2 py-1.5">
                 <span className={`font-semibold ${t.direction === 'BUY' ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
                   {t.direction}
                 </span>
               </td>
-              <td className="px-2 py-1.5 text-right font-mono text-gray-300">{fmt(symbol, t.entryPrice)}</td>
-              <td className="px-2 py-1.5 text-right font-mono text-gray-300">{fmt(symbol, t.exitPrice)}</td>
+              <td className="px-2 py-1.5 text-right font-mono text-zinc-300">{fmt(symbol, t.entryPrice)}</td>
+              <td className="px-2 py-1.5 text-right font-mono text-zinc-300">{fmt(symbol, t.exitPrice)}</td>
               <td className={`px-2 py-1.5 text-right font-mono font-semibold ${t.pnlPercent >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
                 {t.pnlPercent >= 0 ? '+' : ''}{t.pnlPercent.toFixed(2)}%
               </td>
-              <td className="px-2 py-1.5 text-gray-500 uppercase">{t.exitReason}</td>
+              <td className="px-2 py-1.5 text-zinc-500 uppercase">{t.exitReason}</td>
             </tr>
           ))}
         </tbody>
@@ -190,7 +190,7 @@ export default function BacktestDashboard() {
         <div className="flex flex-wrap gap-3">
           {/* Symbol */}
           <div className="flex-1 min-w-[140px]">
-            <label className="text-[9px] uppercase tracking-widest text-gray-600 mb-1 block">Symbol</label>
+            <label className="text-[9px] uppercase tracking-widest text-zinc-600 mb-1 block">Symbol</label>
             <select
               value={symbol}
               onChange={(e) => setSymbol(e.target.value)}
@@ -204,7 +204,7 @@ export default function BacktestDashboard() {
 
           {/* Mode */}
           <div>
-            <label className="text-[9px] uppercase tracking-widest text-gray-600 mb-1 block">Mode</label>
+            <label className="text-[9px] uppercase tracking-widest text-zinc-600 mb-1 block">Mode</label>
             <div className="flex gap-1">
               {modes.map((m) => (
                 <button
@@ -225,7 +225,7 @@ export default function BacktestDashboard() {
 
           {/* Risk */}
           <div>
-            <label className="text-[9px] uppercase tracking-widest text-gray-600 mb-1 block">Risk</label>
+            <label className="text-[9px] uppercase tracking-widest text-zinc-600 mb-1 block">Risk</label>
             <div className="flex gap-1">
               {risks.map((r) => (
                 <button
@@ -250,7 +250,7 @@ export default function BacktestDashboard() {
       {loading && (
         <div className="rounded-lg border border-[#222] bg-[#111] p-8 text-center">
           <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[#f97316] border-t-transparent" />
-          <p className="mt-2 text-xs text-gray-500">Running backtest for {config?.icon} {symbol}...</p>
+          <p className="mt-2 text-xs text-zinc-500">Running backtest for {config?.icon} {symbol}...</p>
         </div>
       )}
 
@@ -313,14 +313,14 @@ export default function BacktestDashboard() {
           >
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-white">Equity Curve</h3>
-              <span className="font-mono text-xs text-gray-500">
+              <span className="font-mono text-xs text-zinc-500">
                 $10,000 → ${result.equityCurve[result.equityCurve.length - 1]?.toFixed(0) ?? '10,000'}
               </span>
             </div>
             {result.equityCurve.length >= 2 ? (
               <EquityCurve data={result.equityCurve} />
             ) : (
-              <div className="h-[200px] flex items-center justify-center text-gray-600 text-xs">
+              <div className="h-[200px] flex items-center justify-center text-zinc-600 text-xs">
                 Not enough data for equity curve
               </div>
             )}
@@ -334,13 +334,13 @@ export default function BacktestDashboard() {
             >
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-semibold text-white">Trade History</h3>
-                <span className="rounded bg-[#1a1a1a] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-gray-500">
+                <span className="rounded bg-[#1a1a1a] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-zinc-500">
                   {result.trades.length} trades
                 </span>
               </div>
               <svg
                 width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-                className={`text-gray-500 transition-transform ${showTrades ? 'rotate-180' : ''}`}
+                className={`text-zinc-500 transition-transform ${showTrades ? 'rotate-180' : ''}`}
               >
                 <polyline points="6 9 12 15 18 9" />
               </svg>

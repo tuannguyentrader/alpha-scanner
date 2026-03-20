@@ -164,7 +164,7 @@ function RuleForm({ onSave, onClose, initial }: RuleFormProps) {
                 onClick={() => setConditions((prev) => prev.filter((c) => c.id !== cond.id))}
                 className="text-zinc-600 hover:text-[#f43f5e] transition-colors text-[10px]"
               >
-                ✕
+                X
               </button>
             )}
           </div>

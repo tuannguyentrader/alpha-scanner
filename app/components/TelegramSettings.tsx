@@ -141,12 +141,12 @@ export default function TelegramSettings({
           {/* Test Status */}
           {testStatus === 'success' && (
             <div className="text-[9px] text-[#10b981] flex items-center gap-1">
-              <span>✓</span> Connected! Test message sent.
+              Connected! Test message sent.
             </div>
           )}
           {testStatus === 'error' && lastError && (
             <div className="text-[9px] text-[#f43f5e] flex items-center gap-1">
-              <span>✗</span> {lastError}
+              {lastError}
             </div>
           )}
           {sending && (

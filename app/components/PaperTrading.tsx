@@ -245,7 +245,7 @@ export default function PaperTrading({
                         onClick={() => onCloseTrade(trade.id, curPrice)}
                         className="rounded bg-[#222] px-1.5 py-0.5 text-[8px] text-zinc-500 hover:text-white hover:bg-[#333] transition-colors"
                       >
-                        ✕
+                        X
                       </button>
                     </div>
                   </div>

@@ -50,7 +50,7 @@ class ErrorBoundaryComponent extends Component<ErrorBoundaryProps, ErrorBoundary
             <h3 className="mb-2 text-sm font-semibold text-white">
               {this.props.fallbackTitle ?? 'Something went wrong'}
             </h3>
-            <p className="mb-4 text-xs text-gray-500 break-all">
+            <p className="mb-4 text-xs text-zinc-500 break-all">
               {this.state.error?.message ?? 'An unexpected error occurred'}
             </p>
 
