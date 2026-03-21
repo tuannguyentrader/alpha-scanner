@@ -312,9 +312,10 @@ tasks:
     output: "app/demo/page.tsx — static demo page, amber DEMO banner + 'Go to Live Dashboard' link, 3 glass signal cards (XAUUSD BUY 87%, BTCUSD SELL 72%, EURUSD NEUTRAL 45%) with confidence bars, TP/SL grids, indicator badges, AI commentary, bottom CTA. app/components/OnboardingTour.tsx — 5-step framer-motion spotlight tour (SVG mask cutout, emerald ring, scroll-to-view, progress dots, Skip/Next/Done, auto-show once, localStorage key onboarding_completed, window.startOnboardingTour() global restart). app/components/OnboardingChecklist.tsx — floating bottom-right collapsible widget, 5 checkable items, animated progress bar, 'Restart guided tour' trigger, permanent dismiss (onboarding_checklist_dismissed). app/page.tsx — imports both components, data-tour-step attrs on signal/risk/broker/alerts/share elements, <OnboardingTour autoShow /> + <OnboardingChecklist /> mounted. app/components/Navbar.tsx — 'Try Demo' link (emerald pill, Play icon) + Demo link. Clean build ✓"
 
   - id: TASK-060
-    status: in_progress
+    status: done
     owner: pm-agent
     notes: "Landing page — dedicated marketing landing page at root / (separate from /dashboard). Hero: headline + animated signal card demo. Features grid: 6 feature cards with icons. Social proof: signal accuracy stats from DB. Pricing section: Free vs Pro tiers. Footer with links. SEO optimised. Converts visitors to signups."
+    output: "LandingPage.tsx (use client) with Hero (text-gradient-emerald headline, animated mock signal card with float, 2 CTAs), Features grid (6 glass cards, stagger useInView animation), Stats section (4 animated counters from /api/accuracy with fallback), Pricing (Free vs Pro glass cards, emerald Pro border, Coming Soon badge), Footer (6 links + copyright). Dashboard moved to /dashboard/page.tsx. Navbar updated with Home link. OG metadata via generateMetadata. Commit 0fbbb01."
 
 next_actions:
   - "Phase 10 defined: 5 tasks (TASK-056 to TASK-060). Start with TASK-056."
