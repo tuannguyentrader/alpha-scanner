@@ -232,12 +232,13 @@ tasks:
     output: "NextAuth v4 credentials provider (email+password), Prisma 5 + SQLite (User + UserSettings models), /api/auth/register + /api/settings (GET/PUT), AuthProvider SessionProvider wrapper, UserMenu component (initials avatar + dropdown), login/register pages at /auth/signin + /auth/register, useUserSettings hook (DB for logged-in, localStorage fallback for guests), bcryptjs password hashing. Commit a7d19f9."
 
   - id: TASK-047
-    status: in_progress
+    status: done
     owner: pm-agent
     notes: "AI signal commentary — GPT-4o-mini integration. After signal generation, call OpenAI to write a 2-sentence plain-English explanation of WHY the signal fired (which indicators aligned, what the key confluence was). Display in SignalPanel below the main signal card. Fallback gracefully if API unavailable."
+    output: "aiCommentary.ts (GPT-4o-mini with 8s timeout, 2min cache, rule-based fallback if no API key or error). /api/commentary POST route. useCommentary hook (deduped by direction+confidence). SignalCommentary component (sparkles icon for AI, message icon for fallback). Integrated below SignalPanel. Commit 98ee353."
 
   - id: TASK-048
-    status: pending
+    status: in_progress
     owner: pm-agent
     notes: "Signal accuracy tracker v2 — server-side accuracy tracking via PostgreSQL (not just localStorage). SignalRecord model: symbol, mode, direction, entryPrice, tp1, sl, timestamp, outcome (HIT_TP1/HIT_SL/EXPIRED/PENDING). Cron job checks open signals every 15min against live price. Public accuracy stats at /accuracy page per symbol."
 

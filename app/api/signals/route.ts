@@ -3,6 +3,7 @@ import { computeIndicatorsForSymbol } from '@/app/api/indicators/route'
 import { computeSRForSymbol } from '@/app/api/sr/route'
 import { generateSignal } from '@/app/lib/signalEngine'
 import { checkRateLimit } from '@/app/lib/apiGuard'
+import { prisma } from '@/app/lib/prisma'
 import type { TradingMode, RiskProfile } from '@/app/data/mockSignals'
 import type { GeneratedSignal } from '@/app/lib/signalEngine'
 
@@ -83,6 +84,26 @@ export async function GET(request: Request): Promise<Response> {
     }
 
     signalCache.set(cacheKey, { data, expiresAt: now + CACHE_TTL, fetchedAt: now })
+
+    // Auto-record non-NEUTRAL signals for accuracy tracking (fire-and-forget)
+    if (signal.direction !== 'NEUTRAL' && indicatorsRes.indicators?.currentPrice) {
+      const entryPrice = indicatorsRes.indicators.currentPrice
+      const atrPct = signal.direction === 'BUY' ? 0.01 : -0.01
+      const tp1 = entryPrice * (1 + atrPct)
+      const sl = entryPrice * (1 - atrPct * 0.5)
+      prisma.signalRecord.create({
+        data: {
+          symbol,
+          mode,
+          direction: signal.direction,
+          entryPrice,
+          tp1,
+          sl,
+          confidence: Math.round(signal.confidence),
+        },
+      }).catch(() => {}) // fire-and-forget, never crash
+    }
+
     return NextResponse.json(data)
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'

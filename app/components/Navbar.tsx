@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, X, Settings, Zap, BarChart3, Trophy, Radio } from 'lucide-react'
+import { Menu, X, Settings, Zap, BarChart3, Trophy, Radio, Target } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import UserMenu from './UserMenu'
 
@@ -73,6 +73,13 @@ export default function Navbar({ onMenuToggle, sidebarOpen = false }: NavbarProp
           >
             <Trophy size={14} />
             Leaderboard
+          </Link>
+          <Link
+            href="/accuracy"
+            className="hidden rounded-md px-3 py-2 text-xs font-medium text-zinc-500 transition-colors hover:bg-white/[0.05] hover:text-zinc-300 sm:flex items-center gap-1.5"
+          >
+            <Target size={14} />
+            Accuracy
           </Link>
 
           <div className="mx-1 hidden h-4 w-px bg-white/[0.06] sm:block" aria-hidden="true" />

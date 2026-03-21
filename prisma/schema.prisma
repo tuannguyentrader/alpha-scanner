@@ -17,6 +17,24 @@ model User {
   settings     UserSettings?
 }
 
+model SignalRecord {
+  id         String   @id @default(cuid())
+  symbol     String
+  mode       String
+  direction  String   // BUY or SELL
+  entryPrice Float
+  tp1        Float
+  sl         Float
+  confidence Int
+  outcome    String   @default("PENDING") // PENDING, HIT_TP1, HIT_SL, EXPIRED
+  createdAt  DateTime @default(now())
+  resolvedAt DateTime?
+
+  @@index([symbol, mode])
+  @@index([outcome])
+  @@index([createdAt])
+}
+
 model UserSettings {
   id               String   @id @default(cuid())
   userId           String   @unique
