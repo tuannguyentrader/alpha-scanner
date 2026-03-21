@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { SYMBOL_REGISTRY } from '@/app/lib/symbols'
 import { checkRateLimit } from '@/app/lib/apiGuard'
+import { validateApiKey } from '@/app/lib/apiKeyAuth'
 
 export interface SymbolPrice {
   price: number
@@ -222,9 +223,20 @@ async function fetchAllPrices(): Promise<PricesResponse> {
 
 /* ── Route handler ────────────────────────────────────────────────────────── */
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const rateLimitResponse = checkRateLimit(request)
   if (rateLimitResponse) return rateLimitResponse
+
+  // Optional API key auth
+  const hasKey =
+    request.headers.get('authorization')?.startsWith('Bearer as_') ||
+    new URL(request.url).searchParams.has('api_key')
+  if (hasKey) {
+    const auth = await validateApiKey(request)
+    if (!auth.valid) {
+      return NextResponse.json({ error: auth.error }, { status: 401 })
+    }
+  }
 
   const now = Date.now()
 

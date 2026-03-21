@@ -16,6 +16,24 @@ model User {
   updatedAt    DateTime           @updatedAt
   settings     UserSettings?
   strategies   StrategyTemplate[]
+  apiKeys      ApiKey[]
+}
+
+model ApiKey {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key            String    @unique
+  name           String
+  plan           String    @default("free")
+  requestsToday  Int       @default(0)
+  lastResetAt    DateTime  @default(now())
+  expiresAt      DateTime?
+  enabled        Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+
+  @@index([userId])
+  @@index([key])
 }
 
 model StrategyTemplate {

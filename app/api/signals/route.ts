@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { computeIndicatorsForSymbol } from '@/app/api/indicators/route'
 import { computeSRForSymbol } from '@/app/api/sr/route'
 import { generateSignal } from '@/app/lib/signalEngine'
 import { checkRateLimit } from '@/app/lib/apiGuard'
 import { prisma } from '@/app/lib/prisma'
 import { dispatchWebhooks } from '@/app/lib/webhookDispatcher'
+import { validateApiKey } from '@/app/lib/apiKeyAuth'
 import type { TradingMode, RiskProfile } from '@/app/data/mockSignals'
 import type { GeneratedSignal } from '@/app/lib/signalEngine'
 
@@ -32,9 +33,20 @@ const VALID_RISKS: RiskProfile[] = ['conservative', 'balanced', 'high-risk']
 
 /* ── Route handler ────────────────────────────────────────────────────────── */
 
-export async function GET(request: Request): Promise<Response> {
+export async function GET(request: NextRequest): Promise<Response> {
   const rateLimitResponse = checkRateLimit(request)
   if (rateLimitResponse) return rateLimitResponse
+
+  // Optional API key auth — validate if key provided, block on invalid key
+  const hasKey =
+    request.headers.get('authorization')?.startsWith('Bearer as_') ||
+    new URL(request.url).searchParams.has('api_key')
+  if (hasKey) {
+    const auth = await validateApiKey(request)
+    if (!auth.valid) {
+      return NextResponse.json({ error: auth.error }, { status: 401 })
+    }
+  }
 
   const { searchParams } = new URL(request.url)
   const symbol = searchParams.get('symbol')?.toUpperCase()

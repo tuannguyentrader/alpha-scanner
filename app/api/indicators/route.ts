@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { fetchHistory } from '@/app/api/history/route'
 import { computeAllIndicators, type AllIndicators } from '@/app/lib/technicalAnalysis'
 import { checkRateLimit } from '@/app/lib/apiGuard'
+import { validateApiKey } from '@/app/lib/apiKeyAuth'
 
 export interface IndicatorsResponse {
   symbol: string
@@ -36,9 +37,20 @@ export async function computeIndicatorsForSymbol(symbol: string): Promise<Indica
 
 /* ── Route handler ────────────────────────────────────────────────────────── */
 
-export async function GET(request: Request): Promise<Response> {
+export async function GET(request: NextRequest): Promise<Response> {
   const rateLimitResponse = checkRateLimit(request)
   if (rateLimitResponse) return rateLimitResponse
+
+  // Optional API key auth
+  const hasKey =
+    request.headers.get('authorization')?.startsWith('Bearer as_') ||
+    new URL(request.url).searchParams.has('api_key')
+  if (hasKey) {
+    const auth = await validateApiKey(request)
+    if (!auth.valid) {
+      return NextResponse.json({ error: auth.error }, { status: 401 })
+    }
+  }
 
   const { searchParams } = new URL(request.url)
   const symbol = searchParams.get('symbol')?.toUpperCase()

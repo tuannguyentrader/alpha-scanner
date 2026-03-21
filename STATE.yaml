@@ -294,14 +294,16 @@ tasks:
     output: "README with hero banner, 5 badges (CI/license/stars/forks/social), 17-feature table, Mermaid architecture diagram, tech stack table, quick-start (manual+Docker), env vars table, deploy buttons, star history chart. CONTRIBUTING.md (fork/branch/PR workflow, code standards, commit convention). Issue templates (bug_report.md, feature_request.md). PR template. MIT LICENSE. Commit d131f64."
 
   - id: TASK-057
-    status: in_progress
+    status: done
     owner: pm-agent
     notes: "Docker support — Dockerfile (multi-stage: builder + runner), docker-compose.yml (app + postgres), .dockerignore, health check endpoint at /api/health (returns version, uptime, DB status). Document Docker setup in README and docs/DEPLOY.md. Image should be < 200MB."
+    output: "3-stage Dockerfile (deps→builder→runner, node:22-alpine, non-root nextjs user, standalone output). docker-compose.yml (app+postgres:16-alpine, healthcheck, volume). .dockerignore. /api/health route (status/version/uptime/timestamp/database connectivity). next.config output:'standalone'. README+DEPLOY.md updated. Commit 5af8610."
 
   - id: TASK-058
-    status: pending
+    status: done
     owner: pm-agent
     notes: "API key monetisation layer — ApiKey Prisma model (userId, key, plan: free/pro, rateLimit, expiresAt). Free plan: 100 req/day. Pro plan: unlimited. Middleware to validate API keys on /api/signals, /api/prices, /api/indicators. Dashboard page /api-keys for generating/revoking keys. Foundation for future paid tier."
+    output: "ApiKey Prisma model (cuid id, userId FK cascade, key@unique as_+nanoid32, name, plan free/pro, requestsToday, lastResetAt, expiresAt?, enabled, createdAt, @@index userId+key). prisma db push applied. app/lib/apiKeyAuth.ts (validateApiKey: Bearer header or ?api_key param, checks exists/enabled/not-expired, auto-reset daily counter UTC, rate limit 100 free/10000 pro, increments requestsToday). /api/api-keys GET (list masked) + POST (create, full key shown once). /api/api-keys/[id] PUT (name/enabled) + DELETE. Optional API key auth added to /api/signals, /api/prices, /api/indicators (additive — public still works without key). /api-keys page with glass card design (list keys, usage bar, create modal, full key copy-once, delete confirm). Navbar API Keys link. nanoid installed. Clean build."
 
   - id: TASK-059
     status: pending

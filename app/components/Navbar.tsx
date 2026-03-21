@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, X, Settings, Zap, BarChart3, Trophy, Radio, Target, Rss } from 'lucide-react'
+import { Menu, X, Settings, Zap, BarChart3, Trophy, Radio, Target, Rss, Key } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import UserMenu from './UserMenu'
 
@@ -94,6 +94,13 @@ export default function Navbar({ onMenuToggle, sidebarOpen = false }: NavbarProp
             >
               <Rss size={13} />
               Feed
+            </Link>
+            <Link
+              href="/api-keys"
+              className="hidden rounded-full px-3 py-1.5 text-[11px] font-medium text-zinc-500 transition-all hover:bg-white/[0.05] hover:text-zinc-300 sm:flex items-center gap-1.5"
+            >
+              <Key size={13} />
+              API Keys
             </Link>
 
             <div className="mx-1 hidden h-3 w-px bg-white/[0.06] sm:block" aria-hidden="true" />
