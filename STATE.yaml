@@ -286,8 +286,34 @@ tasks:
     notes: "CI/CD pipeline — GitHub Actions workflow: lint + tsc + build on every PR, auto-deploy to Railway on merge to main, Lighthouse CI score check (performance > 80, accessibility > 90). Badge in README. Telegram notification on deploy success/failure."
     output: "GitHub Actions ci.yml (build job: Node 22 + npm ci + cache + tsc --noEmit + npm run build; lighthouse job: treosh/lighthouse-ci-action@v12 on PRs; deploy job: Railway CLI on push to main; notify job: Telegram curl with status/SHA/commit message). lighthouserc.json (perf>=0.80 warn, a11y>=0.90 error). README badge. Needs 3 secrets: RAILWAY_TOKEN, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID. Commit f340bcc."
 
+  # Phase 10 — Open Source Launch + Monetisation
+  - id: TASK-056
+    status: in_progress
+    owner: pm-agent
+    notes: "GitHub repo polish for open source launch — clean README with hero banner (badges: stars, forks, license, CI status), feature list with screenshots/GIFs, quick-start guide (Docker + manual), architecture diagram (Mermaid), contributing guide (CONTRIBUTING.md), issue templates (bug, feature request), PR template. Make it star-worthy."
+
+  - id: TASK-057
+    status: pending
+    owner: pm-agent
+    notes: "Docker support — Dockerfile (multi-stage: builder + runner), docker-compose.yml (app + postgres), .dockerignore, health check endpoint at /api/health (returns version, uptime, DB status). Document Docker setup in README and docs/DEPLOY.md. Image should be < 200MB."
+
+  - id: TASK-058
+    status: pending
+    owner: pm-agent
+    notes: "API key monetisation layer — ApiKey Prisma model (userId, key, plan: free/pro, rateLimit, expiresAt). Free plan: 100 req/day. Pro plan: unlimited. Middleware to validate API keys on /api/signals, /api/prices, /api/indicators. Dashboard page /api-keys for generating/revoking keys. Foundation for future paid tier."
+
+  - id: TASK-059
+    status: pending
+    owner: pm-agent
+    notes: "Demo mode + onboarding — /demo route with pre-loaded mock signals (no API keys needed), guided tour overlay (custom lightweight), 5-step onboarding checklist (view signal, set risk profile, connect broker, enable alerts, share signal). Persist tour completion in localStorage. Show 'Try Demo' CTA on landing page."
+
+  - id: TASK-060
+    status: pending
+    owner: pm-agent
+    notes: "Landing page — dedicated marketing landing page at root / (separate from /dashboard). Hero: headline + animated signal card demo. Features grid: 6 feature cards with icons. Social proof: signal accuracy stats from DB. Pricing section: Free vs Pro tiers. Footer with links. SEO optimised. Converts visitors to signups."
+
 next_actions:
-  - "Phase 9 complete! All 55 tasks done. Define Phase 10 or ship it."
+  - "Phase 10 defined: 5 tasks (TASK-056 to TASK-060). Start with TASK-056."
 
 approval_pending: false
 pending_commit_summary: null
