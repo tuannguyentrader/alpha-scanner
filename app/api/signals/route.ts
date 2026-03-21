@@ -4,6 +4,7 @@ import { computeSRForSymbol } from '@/app/api/sr/route'
 import { generateSignal } from '@/app/lib/signalEngine'
 import { checkRateLimit } from '@/app/lib/apiGuard'
 import { prisma } from '@/app/lib/prisma'
+import { dispatchWebhooks } from '@/app/lib/webhookDispatcher'
 import type { TradingMode, RiskProfile } from '@/app/data/mockSignals'
 import type { GeneratedSignal } from '@/app/lib/signalEngine'
 
@@ -102,6 +103,18 @@ export async function GET(request: Request): Promise<Response> {
           confidence: Math.round(signal.confidence),
         },
       }).catch(() => {}) // fire-and-forget, never crash
+
+      // Dispatch webhooks (fire-and-forget)
+      dispatchWebhooks({
+        symbol,
+        direction: signal.direction,
+        entryPrice,
+        tp1,
+        sl,
+        confidence: signal.confidence,
+        timestamp: new Date().toISOString(),
+        mode,
+      }).catch(() => {})
     }
 
     return NextResponse.json(data)

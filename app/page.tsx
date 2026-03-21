@@ -38,6 +38,7 @@ const MultiTimeframe = lazy(() => import('./components/MultiTimeframe'))
 const PerformanceAnalytics = lazy(() => import('./components/PerformanceAnalytics'))
 const AlertRuleBuilder = lazy(() => import('./components/AlertRuleBuilder'))
 const TelegramSettings = lazy(() => import('./components/TelegramSettings'))
+const WebhookSettings = lazy(() => import('./components/WebhookSettings'))
 
 // Memoized pure display components
 const MemoSignalPanel = memo(SignalPanel)
@@ -244,6 +245,13 @@ export default function Home() {
                   onUpdateConfig={telegram.updateConfig}
                   onTestConnection={telegram.testConnection}
                 />
+              </Suspense>
+            </ErrorBoundary>
+
+            {/* Webhook settings */}
+            <ErrorBoundary fallbackTitle="Webhook error">
+              <Suspense fallback={<div className="h-10 rounded bg-white/[0.03] animate-pulse" />}>
+                <WebhookSettings />
               </Suspense>
             </ErrorBoundary>
           </div>

@@ -238,12 +238,13 @@ tasks:
     output: "aiCommentary.ts (GPT-4o-mini with 8s timeout, 2min cache, rule-based fallback if no API key or error). /api/commentary POST route. useCommentary hook (deduped by direction+confidence). SignalCommentary component (sparkles icon for AI, message icon for fallback). Integrated below SignalPanel. Commit 98ee353."
 
   - id: TASK-048
-    status: in_progress
+    status: done
     owner: pm-agent
     notes: "Signal accuracy tracker v2 — server-side accuracy tracking via PostgreSQL (not just localStorage). SignalRecord model: symbol, mode, direction, entryPrice, tp1, sl, timestamp, outcome (HIT_TP1/HIT_SL/EXPIRED/PENDING). Cron job checks open signals every 15min against live price. Public accuracy stats at /accuracy page per symbol."
+    output: "SignalRecord Prisma model (symbol, mode, direction, entryPrice, tp1, sl, confidence, outcome, timestamps). Auto-record on signal generation (fire-and-forget). /api/accuracy/check GET (cron endpoint, checks pending signals vs live prices, resolves HIT_TP1/HIT_SL/EXPIRED after 24h). /api/accuracy GET (stats by symbol + overall + recent records). /api/signals/record POST (manual recording). /accuracy page with overall stats cards, per-symbol win rate bars, recent signals table. Navbar link added. Commit bdd0693."
 
   - id: TASK-049
-    status: pending
+    status: in_progress
     owner: pm-agent
     notes: "Webhook outbound — allow users to configure a custom webhook URL. On every new signal, POST a JSON payload (symbol, direction, entry, TP/SL, confidence, timestamp) to their URL. Retry 3x with backoff. Admin dashboard to see webhook delivery logs. Useful for connecting to trading bots."
 

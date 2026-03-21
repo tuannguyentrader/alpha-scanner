@@ -35,6 +35,32 @@ model SignalRecord {
   @@index([createdAt])
 }
 
+model WebhookConfig {
+  id        String   @id @default(cuid())
+  url       String
+  secret    String?  // optional signing secret
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  logs      WebhookLog[]
+}
+
+model WebhookLog {
+  id          String        @id @default(cuid())
+  webhookId   String
+  webhook     WebhookConfig @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  symbol      String
+  direction   String
+  statusCode  Int?
+  success     Boolean
+  attempt     Int           @default(1)
+  error       String?
+  createdAt   DateTime      @default(now())
+
+  @@index([webhookId])
+  @@index([createdAt])
+}
+
 model UserSettings {
   id               String   @id @default(cuid())
   userId           String   @unique
