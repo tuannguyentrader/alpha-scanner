@@ -226,12 +226,13 @@ tasks:
 
   # Phase 8 — Production Hardening + AI Signals + User Accounts
   - id: TASK-046
-    status: in_progress
+    status: done
     owner: pm-agent
     notes: "User accounts + saved settings — NextAuth.js (Telegram OAuth provider). UserSettings Prisma model: saved symbol watchlist, preferred mode, risk profile, leverage/capital, Telegram bot config. Persist all settings to DB. Load on login. Guest mode still works without login."
+    output: "NextAuth v4 credentials provider (email+password), Prisma 5 + SQLite (User + UserSettings models), /api/auth/register + /api/settings (GET/PUT), AuthProvider SessionProvider wrapper, UserMenu component (initials avatar + dropdown), login/register pages at /auth/signin + /auth/register, useUserSettings hook (DB for logged-in, localStorage fallback for guests), bcryptjs password hashing. Commit a7d19f9."
 
   - id: TASK-047
-    status: pending
+    status: in_progress
     owner: pm-agent
     notes: "AI signal commentary — GPT-4o-mini integration. After signal generation, call OpenAI to write a 2-sentence plain-English explanation of WHY the signal fired (which indicators aligned, what the key confluence was). Display in SignalPanel below the main signal card. Fallback gracefully if API unavailable."
 

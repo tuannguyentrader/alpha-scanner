@@ -24,6 +24,8 @@ import { useSignalHistory } from './hooks/useSignalHistory'
 import { usePerformanceAnalytics } from './hooks/usePerformanceAnalytics'
 import { useCustomAlerts } from './hooks/useCustomAlerts'
 import { useTelegram } from './hooks/useTelegram'
+import { useCommentary } from './hooks/useCommentary'
+import SignalCommentary from './components/SignalCommentary'
 
 // Lazy-loaded heavy panels
 const PriceChart = lazy(() => import('./components/PriceChart'))
@@ -102,6 +104,9 @@ export default function Home() {
 
   // Custom alert rules
   const customAlerts = useCustomAlerts(selectedSymbol, currentPrice)
+
+  // AI commentary
+  const { commentary, loading: commentaryLoading } = useCommentary(selectedSymbol, signal ?? null, currentPrice)
 
   // Telegram integration
   const telegram = useTelegram()
@@ -288,6 +293,13 @@ export default function Home() {
             {/* Signal Panel — full width */}
             <ErrorBoundary fallbackTitle="Signal panel error">
               <MemoSignalPanel symbol={selectedSymbol} mode={selectedMode} risk={selectedRisk} />
+              {(commentary || commentaryLoading) && (
+                <SignalCommentary
+                  text={commentary?.text ?? ''}
+                  isAI={commentary?.isAI ?? false}
+                  loading={commentaryLoading}
+                />
+              )}
             </ErrorBoundary>
 
             {/* Price Chart */}
