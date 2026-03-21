@@ -175,8 +175,8 @@ See [`.env.example`](.env.example) for a full template.
 
 One-click deploy to your preferred platform:
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
 [![Deploy on Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/naimkatiman/alpha-scanner&env=DATABASE_URL,NEXTAUTH_SECRET,NEXTAUTH_URL)
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template?referralCode=alpha-scanner)
 
 See the full [Deployment Guide](docs/DEPLOY.md) for detailed instructions.
 
