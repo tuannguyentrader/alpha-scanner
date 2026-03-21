@@ -1,16 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, X, Settings, Zap, BarChart3, Trophy, Radio, Target, Rss, Key } from 'lucide-react'
+import { Menu, X, Zap, BarChart3, Trophy, Radio, Target, Rss, Key, Play, Home } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import UserMenu from './UserMenu'
 
 interface NavbarProps {
-  onMenuToggle: () => void
+  onMenuToggle?: () => void
   sidebarOpen?: boolean
 }
 
-export default function Navbar({ onMenuToggle, sidebarOpen = false }: NavbarProps) {
+export default function Navbar({ onMenuToggle = () => {}, sidebarOpen = false }: NavbarProps) {
   return (
     <header className="sticky top-0 z-50 px-3 pt-3 pb-1">
       {/* Floating glass pill navbar */}
@@ -67,6 +67,20 @@ export default function Navbar({ onMenuToggle, sidebarOpen = false }: NavbarProp
 
           {/* Right nav */}
           <nav className="flex items-center gap-0.5" aria-label="Top navigation">
+            <Link
+              href="/"
+              className="hidden rounded-full px-3 py-1.5 text-[11px] font-medium text-zinc-500 transition-all hover:bg-white/[0.05] hover:text-zinc-300 sm:flex items-center gap-1.5"
+            >
+              <Home size={13} />
+              Home
+            </Link>
+            <Link
+              href="/demo"
+              className="hidden rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[11px] font-medium text-emerald-400 transition-all hover:bg-emerald-500/10 hover:text-emerald-300 sm:flex items-center gap-1.5"
+            >
+              <Play size={11} className="fill-current" aria-hidden="true" />
+              Try Demo
+            </Link>
             <Link
               href="/backtest"
               className="hidden rounded-full px-3 py-1.5 text-[11px] font-medium text-zinc-500 transition-all hover:bg-white/[0.05] hover:text-zinc-300 sm:flex items-center gap-1.5"

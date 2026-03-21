@@ -306,12 +306,13 @@ tasks:
     output: "ApiKey Prisma model (cuid id, userId FK cascade, key@unique as_+nanoid32, name, plan free/pro, requestsToday, lastResetAt, expiresAt?, enabled, createdAt, @@index userId+key). prisma db push applied. app/lib/apiKeyAuth.ts (validateApiKey: Bearer header or ?api_key param, checks exists/enabled/not-expired, auto-reset daily counter UTC, rate limit 100 free/10000 pro, increments requestsToday). /api/api-keys GET (list masked) + POST (create, full key shown once). /api/api-keys/[id] PUT (name/enabled) + DELETE. Optional API key auth added to /api/signals, /api/prices, /api/indicators (additive — public still works without key). /api-keys page with glass card design (list keys, usage bar, create modal, full key copy-once, delete confirm). Navbar API Keys link. nanoid installed. Clean build."
 
   - id: TASK-059
-    status: pending
+    status: done
     owner: pm-agent
     notes: "Demo mode + onboarding — /demo route with pre-loaded mock signals (no API keys needed), guided tour overlay (custom lightweight), 5-step onboarding checklist (view signal, set risk profile, connect broker, enable alerts, share signal). Persist tour completion in localStorage. Show 'Try Demo' CTA on landing page."
+    output: "app/demo/page.tsx — static demo page, amber DEMO banner + 'Go to Live Dashboard' link, 3 glass signal cards (XAUUSD BUY 87%, BTCUSD SELL 72%, EURUSD NEUTRAL 45%) with confidence bars, TP/SL grids, indicator badges, AI commentary, bottom CTA. app/components/OnboardingTour.tsx — 5-step framer-motion spotlight tour (SVG mask cutout, emerald ring, scroll-to-view, progress dots, Skip/Next/Done, auto-show once, localStorage key onboarding_completed, window.startOnboardingTour() global restart). app/components/OnboardingChecklist.tsx — floating bottom-right collapsible widget, 5 checkable items, animated progress bar, 'Restart guided tour' trigger, permanent dismiss (onboarding_checklist_dismissed). app/page.tsx — imports both components, data-tour-step attrs on signal/risk/broker/alerts/share elements, <OnboardingTour autoShow /> + <OnboardingChecklist /> mounted. app/components/Navbar.tsx — 'Try Demo' link (emerald pill, Play icon) + Demo link. Clean build ✓"
 
   - id: TASK-060
-    status: pending
+    status: in_progress
     owner: pm-agent
     notes: "Landing page — dedicated marketing landing page at root / (separate from /dashboard). Hero: headline + animated signal card demo. Features grid: 6 feature cards with icons. Social proof: signal accuracy stats from DB. Pricing section: Free vs Pro tiers. Footer with links. SEO optimised. Converts visitors to signups."
 
