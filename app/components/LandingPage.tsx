@@ -209,7 +209,7 @@ function PricingSection() {
           </span>
         </div>
         <ul className="flex flex-col gap-2.5 flex-1">
-          {['Unlimited API requests', 'Webhook integrations', 'Priority support', 'Advanced backtesting', 'Custom alert rules'].map((item) => (
+          {['Unlimited API requests', 'Plugs integrations', 'Priority support', 'Advanced backtesting', 'Custom alert rules'].map((item) => (
             <li key={item} className="flex items-center gap-2 text-sm text-zinc-400">
               <span className="text-blue-500 text-xs">&#10003;</span>
               {item}

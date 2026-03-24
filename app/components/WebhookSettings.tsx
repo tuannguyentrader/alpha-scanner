@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Webhook, Plus, Trash2, ToggleLeft, ToggleRight, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
+import { Plugs, Plus, Trash, ToggleLeft, ToggleRight, CaretDown, CaretUp, ArrowSquareOut } from '@phosphor-icons/react'
 
 interface WebhookConfig {
   id: string
@@ -95,15 +95,15 @@ export default function WebhookSettings() {
         className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
       >
         <div className="flex items-center gap-2">
-          <Webhook size={14} className="text-emerald-500" />
-          <span className="text-xs font-semibold text-zinc-300">Webhooks</span>
+          <Plugs size={14} className="text-emerald-500" />
+          <span className="text-xs font-semibold text-zinc-300">Plugs</span>
           {webhooks.filter((w) => w.enabled).length > 0 && (
             <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400">
               {webhooks.filter((w) => w.enabled).length} active
             </span>
           )}
         </div>
-        {expanded ? <ChevronUp size={14} className="text-zinc-500" /> : <ChevronDown size={14} className="text-zinc-500" />}
+        {expanded ? <CaretUp size={14} className="text-zinc-500" /> : <CaretDown size={14} className="text-zinc-500" />}
       </button>
 
       {expanded && (
@@ -126,7 +126,7 @@ export default function WebhookSettings() {
             </button>
           </div>
 
-          {/* Webhook list */}
+          {/* Plugs list */}
           {webhooks.length === 0 ? (
             <p className="text-xs text-zinc-600 text-center py-2">No webhooks configured</p>
           ) : (
@@ -150,7 +150,7 @@ export default function WebhookSettings() {
                     onClick={() => deleteWebhook(wh.id)}
                     className="shrink-0 text-zinc-600 hover:text-rose-400 transition-colors"
                   >
-                    <Trash2 size={12} />
+                    <Trash size={12} />
                   </button>
                 </div>
               ))}
@@ -162,7 +162,7 @@ export default function WebhookSettings() {
             onClick={loadLogs}
             className="flex items-center gap-1 text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors"
           >
-            <ExternalLink size={10} />
+            <ArrowSquareOut size={10} />
             {showLogs ? 'Hide delivery logs' : 'Show delivery logs'}
           </button>
 
@@ -193,7 +193,7 @@ export default function WebhookSettings() {
           )}
 
           <p className="text-[9px] text-zinc-700 leading-relaxed">
-            Webhooks receive POST requests with JSON payload on every new signal. Retries 3x with exponential backoff.
+            Plugs receive POST requests with JSON payload on every new signal. Retries 3x with exponential backoff.
           </p>
         </div>
       )}

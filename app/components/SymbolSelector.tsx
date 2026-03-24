@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { fmt, getSymbolsByCategory, getAllSymbols } from '../lib/symbols'
 import type { SymbolPrice } from '../hooks/usePrices'
-import { Coins, Bitcoin, DollarSign, Globe, ChevronDown, CircleDot } from 'lucide-react'
+import { Coins, CurrencyBtc, CurrencyDollar, Globe, CaretDown, RadioButton } from '@phosphor-icons/react'
 
 function SymbolIcon({ icon, className = '' }: { icon: string; className?: string }) {
   const size = 14
@@ -12,8 +12,8 @@ function SymbolIcon({ icon, className = '' }: { icon: string; className?: string
     case 'silver':
       return <Coins size={size} className={className} />
     default:
-      if (icon.length <= 3) return <DollarSign size={size} className={className} />
-      return <CircleDot size={size} className={className} />
+      if (icon.length <= 3) return <CurrencyDollar size={size} className={className} />
+      return <RadioButton size={size} className={className} />
   }
 }
 

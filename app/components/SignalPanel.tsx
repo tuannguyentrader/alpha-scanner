@@ -5,7 +5,7 @@ import type { TradingMode, RiskProfile } from '../data/mockSignals'
 import { useSignals } from '../hooks/useSignals'
 import ShareSignal from './ShareSignal'
 import { motion } from 'framer-motion'
-import { Radio, Target, Shield, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { Radio, Crosshair, Shield, TrendUp, TrendDown, Minus } from '@phosphor-icons/react'
 
 interface SignalPanelProps {
   symbol: string
@@ -130,7 +130,7 @@ function PriceRow({
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-8 text-center">
-      <Target size={32} className="mb-3 text-zinc-700" />
+      <Crosshair size={32} className="mb-3 text-zinc-700" />
       <p className="text-sm font-medium text-zinc-500">No signal available</p>
       <p className="mt-1 text-xs text-zinc-600">Select a symbol to generate a signal</p>
     </div>
@@ -151,8 +151,8 @@ function getGlowClass(direction: 'BUY' | 'SELL' | 'NEUTRAL'): string {
 }
 
 function DirectionIcon({ direction }: { direction: 'BUY' | 'SELL' | 'NEUTRAL' }) {
-  if (direction === 'BUY') return <TrendingUp size={14} />
-  if (direction === 'SELL') return <TrendingDown size={14} />
+  if (direction === 'BUY') return <TrendUp size={14} />
+  if (direction === 'SELL') return <TrendDown size={14} />
   return <Minus size={14} />
 }
 

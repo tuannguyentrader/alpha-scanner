@@ -3,16 +3,16 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
-  TrendingUp,
-  TrendingDown,
+  TrendUp,
+  TrendDown,
   Minus,
   ArrowRight,
   Shield,
-  Target,
-  Zap,
-  BarChart3,
-  AlertCircle,
-} from 'lucide-react'
+  Crosshair,
+  Lightning,
+  ChartBar,
+  WarningCircle,
+} from '@phosphor-icons/react'
 
 const DEMO_SIGNALS = [
   {
@@ -73,7 +73,7 @@ const DEMO_SIGNALS = [
 
 const DIR_CFG = {
   BUY: {
-    Icon: TrendingUp,
+    Icon: TrendUp,
     color: 'text-emerald-400',
     bg: 'bg-emerald-500/10',
     border: 'border-emerald-500/20',
@@ -81,7 +81,7 @@ const DIR_CFG = {
     bar: 'bg-emerald-500',
   },
   SELL: {
-    Icon: TrendingDown,
+    Icon: TrendDown,
     color: 'text-rose-400',
     bg: 'bg-rose-500/10',
     border: 'border-rose-500/20',
@@ -146,7 +146,7 @@ export default function DemoPage() {
             transition={{ duration: 0.4 }}
             className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1"
           >
-            <Zap size={12} className="text-emerald-500" aria-hidden="true" />
+            <Lightning size={12} className="text-emerald-500" aria-hidden="true" />
             <span className="text-[11px] font-semibold tracking-wider text-emerald-400">
               ALPHA SCANNER — DEMO
             </span>
@@ -255,7 +255,7 @@ export default function DemoPage() {
                         className="rounded-lg border border-emerald-500/10 bg-emerald-500/5 px-2.5 py-2"
                       >
                         <div className="mb-0.5 flex items-center gap-1 text-[9px] text-zinc-600">
-                          <Target size={9} className="text-emerald-400" aria-hidden="true" />
+                          <Crosshair size={9} className="text-emerald-400" aria-hidden="true" />
                           {label}
                         </div>
                         <div className="font-mono text-xs text-emerald-400">
@@ -304,7 +304,7 @@ export default function DemoPage() {
                 {/* AI commentary */}
                 <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3">
                   <div className="mb-1.5 flex items-center gap-1.5">
-                    <BarChart3 size={10} className="text-emerald-500" aria-hidden="true" />
+                    <ChartBar size={10} className="text-emerald-500" aria-hidden="true" />
                     <span className="text-[9px] font-semibold uppercase tracking-widest text-emerald-400">
                       AI Commentary
                     </span>
@@ -326,7 +326,7 @@ export default function DemoPage() {
           className="rounded-2xl border border-emerald-500/20 glass-panel p-6 text-center"
         >
           <div className="mb-2 flex items-center justify-center gap-2">
-            <AlertCircle size={14} className="text-amber-400" aria-hidden="true" />
+            <WarningCircle size={14} className="text-amber-400" aria-hidden="true" />
             <span className="text-xs font-semibold text-zinc-400">
               Demo signals are for exploration only — not financial advice
             </span>

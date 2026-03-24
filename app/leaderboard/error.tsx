@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { Warning, ArrowsClockwise } from '@phosphor-icons/react'
 
 export default function LeaderboardError({
   error,
@@ -19,7 +19,7 @@ export default function LeaderboardError({
     <div className="min-h-[100dvh] bg-[#050505] flex items-center justify-center px-4">
       <div className="w-full max-w-sm border border-rose-500/20 rounded-2xl bg-[#0a0a0a] overflow-hidden">
         <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06] bg-rose-500/5">
-          <AlertTriangle size={11} className="text-rose-400" />
+          <Warning size={11} className="text-rose-400" />
           <span className="text-[10px] uppercase tracking-widest text-rose-600 font-medium">Leaderboard Error</span>
         </div>
         <div className="px-5 py-6">
@@ -32,11 +32,11 @@ export default function LeaderboardError({
               onClick={reset}
               className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-white/[0.06] transition-colors"
             >
-              <RefreshCw size={11} />
+              <ArrowsClockwise size={11} />
               Retry
             </button>
             <Link href="/" className="flex items-center rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs font-medium text-emerald-400 hover:bg-emerald-500/10 transition-colors">
-              Home
+              House
             </Link>
           </div>
         </div>

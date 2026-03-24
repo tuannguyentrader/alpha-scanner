@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Link2, Loader2, Unplug, ChevronDown } from 'lucide-react'
+import { LinkSimple, CircleNotch, PlugsConnected, CaretDown } from '@phosphor-icons/react'
 import type { BrokerState } from '../hooks/useBroker'
 import type { BrokerAccount } from '../lib/brokerApi'
 
@@ -53,7 +53,7 @@ export default function BrokerConnect({
         aria-expanded={isExpanded}
       >
         <div className="flex items-center gap-2 min-w-0">
-          <Link2 size={14} className="text-zinc-500 flex-shrink-0" />
+          <LinkSimple size={14} className="text-zinc-500 flex-shrink-0" />
           <span className="text-xs font-semibold text-white truncate">Broker</span>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -61,7 +61,7 @@ export default function BrokerConnect({
           <span className="text-[9px] uppercase tracking-wider" style={{ color: cfg.color }}>
             {cfg.label}
           </span>
-          <ChevronDown
+          <CaretDown
             size={10}
             className={`text-zinc-600 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
           />
@@ -89,7 +89,7 @@ export default function BrokerConnect({
                 onClick={handleDisconnect}
                 className="w-full flex items-center justify-center gap-1.5 rounded border border-rose-500/30 bg-rose-500/10 py-2 text-[10px] font-semibold text-rose-500 transition-all hover:bg-rose-500/20 active:scale-[0.98]"
               >
-                <Unplug size={12} />
+                <PlugsConnected size={12} />
                 Disconnect
               </button>
             </>
@@ -138,7 +138,7 @@ export default function BrokerConnect({
               >
                 {state === 'connecting' ? (
                   <span className="flex items-center justify-center gap-1.5">
-                    <Loader2 size={12} className="animate-spin" />
+                    <CircleNotch size={12} className="animate-spin" />
                     Connecting...
                   </span>
                 ) : (

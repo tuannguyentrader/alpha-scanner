@@ -4,7 +4,7 @@ import { fmt, fmtPips } from '../data/mockSignals'
 import type { TradingMode, RiskProfile } from '../data/mockSignals'
 import { useTpSl } from '../hooks/useTpSl'
 import { motion } from 'framer-motion'
-import { Radio } from 'lucide-react'
+import { Radio } from '@phosphor-icons/react'
 
 const spring = { type: 'spring' as const, stiffness: 100, damping: 20 }
 

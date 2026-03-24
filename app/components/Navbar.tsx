@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, X, Zap, BarChart3, Trophy, Radio, Target, Rss, Key, Play, Home } from 'lucide-react'
+import { List, X, Lightning, ChartBar, Trophy, Radio, Crosshair, Rss, Key, Play, House } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import UserMenu from './UserMenu'
 
@@ -44,7 +44,7 @@ export default function Navbar({ onMenuToggle = () => {}, sidebarOpen = false }:
                     exit={{ rotate: -90, opacity: 0 }}
                     transition={{ duration: 0.15 }}
                   >
-                    <Menu size={16} />
+                    <List size={16} />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -59,7 +59,7 @@ export default function Navbar({ onMenuToggle = () => {}, sidebarOpen = false }:
                 whileHover={{ rotate: 15 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
-                <Zap size={18} className="text-emerald-500" aria-hidden="true" />
+                <Lightning size={18} className="text-emerald-500" aria-hidden="true" />
               </motion.div>
               <span className="font-bold tracking-tight text-sm text-gradient-emerald">Alpha Scanner</span>
             </Link>
@@ -71,8 +71,8 @@ export default function Navbar({ onMenuToggle = () => {}, sidebarOpen = false }:
               href="/"
               className="hidden rounded-full px-3 py-1.5 text-[11px] font-medium text-zinc-500 transition-all hover:bg-white/[0.05] hover:text-zinc-300 sm:flex items-center gap-1.5"
             >
-              <Home size={13} />
-              Home
+              <House size={13} />
+              House
             </Link>
             <Link
               href="/demo"
@@ -85,7 +85,7 @@ export default function Navbar({ onMenuToggle = () => {}, sidebarOpen = false }:
               href="/backtest"
               className="hidden rounded-full px-3 py-1.5 text-[11px] font-medium text-zinc-500 transition-all hover:bg-white/[0.05] hover:text-zinc-300 sm:flex items-center gap-1.5"
             >
-              <BarChart3 size={13} />
+              <ChartBar size={13} />
               Backtest
             </Link>
             <Link
@@ -99,7 +99,7 @@ export default function Navbar({ onMenuToggle = () => {}, sidebarOpen = false }:
               href="/accuracy"
               className="hidden rounded-full px-3 py-1.5 text-[11px] font-medium text-zinc-500 transition-all hover:bg-white/[0.05] hover:text-zinc-300 sm:flex items-center gap-1.5"
             >
-              <Target size={13} />
+              <Crosshair size={13} />
               Accuracy
             </Link>
             <Link

@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
-import { User, LogOut, LogIn } from 'lucide-react'
+import { User, SignOut, SignIn } from '@phosphor-icons/react'
 import { useState, useRef, useEffect } from 'react'
 
 export default function UserMenu() {
@@ -32,7 +32,7 @@ export default function UserMenu() {
         href="/auth/signin"
         className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-zinc-400 transition-colors hover:bg-white/[0.05] hover:text-white"
       >
-        <LogIn size={14} />
+        <SignIn size={14} />
         <span className="hidden sm:inline">Login</span>
       </Link>
     )
@@ -72,7 +72,7 @@ export default function UserMenu() {
               }}
               className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-zinc-400 transition-colors hover:bg-white/[0.05] hover:text-white"
             >
-              <LogOut size={14} />
+              <SignOut size={14} />
               Sign out
             </button>
           </div>

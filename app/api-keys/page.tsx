@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { Key, Plus, Copy, Check, Trash2, ToggleLeft, ToggleRight, X, AlertCircle } from 'lucide-react'
+import { Key, Plus, Copy, Check, Trash, ToggleLeft, ToggleRight, X, WarningCircle } from '@phosphor-icons/react'
 
 interface ApiKeyItem {
   id: string
@@ -168,7 +168,7 @@ export default function ApiKeysPage() {
         {/* Error state */}
         {error && (
           <div className="flex items-center gap-2 rounded-lg border border-rose-500/20 bg-rose-500/5 px-4 py-3 text-sm text-rose-400 mb-6">
-            <AlertCircle size={14} />
+            <WarningCircle size={14} />
             {error}
           </div>
         )}
@@ -259,7 +259,7 @@ export default function ApiKeysPage() {
                         title="Delete key"
                         className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/5 transition"
                       >
-                        <Trash2 size={14} />
+                        <Trash size={14} />
                       </button>
                     </div>
                   </div>

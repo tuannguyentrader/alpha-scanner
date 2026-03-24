@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ChevronRight, SkipForward } from 'lucide-react'
+import { X, CaretRight, SkipForward } from '@phosphor-icons/react'
 
 const TOUR_STEPS = [
   {
@@ -284,7 +284,7 @@ export default function OnboardingTour({ autoShow = true }: OnboardingTourProps)
                 {stepIndex < TOUR_STEPS.length - 1 ? (
                   <>
                     Next
-                    <ChevronRight size={12} aria-hidden="true" />
+                    <CaretRight size={12} aria-hidden="true" />
                   </>
                 ) : (
                   'Done'

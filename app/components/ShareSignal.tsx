@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { Share2, Copy, Download, Check, X } from 'lucide-react'
+import { ShareNetwork, Copy, Download, Check, X } from '@phosphor-icons/react'
 import type { SignalDirection } from '../lib/signalEngine'
 import { fmt } from '../lib/symbols'
 
@@ -194,7 +194,7 @@ export default function ShareSignal({
         className="rounded border border-white/[0.06] bg-white/[0.02] px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-zinc-500 transition-all hover:border-emerald-500/40 hover:text-emerald-500 hover:bg-emerald-500/10 active:scale-95 inline-flex items-center gap-1"
         aria-label="Share signal"
       >
-        <Share2 size={10} />
+        <ShareNetwork size={10} />
         Share
       </button>
 
@@ -282,7 +282,7 @@ export default function ShareSignal({
                   onClick={handleNativeShare}
                   className="rounded border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-500 transition-all hover:bg-emerald-500/20 active:scale-[0.97]"
                 >
-                  <Share2 size={14} />
+                  <ShareNetwork size={14} />
                 </button>
               )}
             </div>

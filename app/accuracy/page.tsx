@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Target, TrendingUp, TrendingDown, Clock, Zap, BarChart2 } from 'lucide-react'
+import { ArrowLeft, Crosshair, TrendUp, TrendDown, Clock, Lightning, ChartBar } from '@phosphor-icons/react'
 
 interface SymbolAccuracy {
   symbol: string
@@ -77,7 +77,7 @@ export default function AccuracyPage() {
           </Link>
           <div className="h-4 w-px bg-white/[0.06]" />
           <div className="flex items-center gap-2">
-            <Target size={16} className="text-emerald-500" />
+            <Crosshair size={16} className="text-emerald-500" />
             <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-medium">Signal Accuracy</span>
           </div>
         </div>
@@ -107,11 +107,11 @@ export default function AccuracyPage() {
           /* Empty state — cockpit-style */
           <div className="border border-white/[0.06] rounded-2xl bg-[#0a0a0a] overflow-hidden">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-white/[0.04]">
-              <BarChart2 size={14} className="text-zinc-700" />
+              <ChartBar size={14} className="text-zinc-700" />
               <span className="text-[10px] uppercase tracking-widest text-zinc-700 font-medium">No data</span>
             </div>
             <div className="px-6 py-12 text-center">
-              <Target size={32} className="mx-auto mb-4 text-zinc-800" />
+              <Crosshair size={32} className="mx-auto mb-4 text-zinc-800" />
               <p className="text-sm font-semibold text-zinc-500">No signal data yet</p>
               <p className="mt-1.5 text-xs text-zinc-700 max-w-xs mx-auto">
                 Accuracy tracking starts automatically once signals are generated and resolved.
@@ -120,7 +120,7 @@ export default function AccuracyPage() {
                 href="/"
                 className="mt-6 inline-flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-2 text-sm font-medium text-emerald-400 hover:bg-emerald-500/10 transition-colors"
               >
-                <Zap size={12} />
+                <Lightning size={12} />
                 View Dashboard
               </Link>
             </div>
@@ -139,14 +139,14 @@ export default function AccuracyPage() {
               </div>
               <div className="flex-1 min-w-[100px] px-5 py-4">
                 <div className="flex items-center gap-1.5 mb-1">
-                  <TrendingUp size={10} className="text-emerald-500" />
+                  <TrendUp size={10} className="text-emerald-500" />
                   <p className="data-label">Hit TP1</p>
                 </div>
                 <p className="data-value text-xl text-emerald-400">{data.overall.hitTP1}</p>
               </div>
               <div className="flex-1 min-w-[100px] px-5 py-4">
                 <div className="flex items-center gap-1.5 mb-1">
-                  <TrendingDown size={10} className="text-rose-500" />
+                  <TrendDown size={10} className="text-rose-500" />
                   <p className="data-label">Hit SL</p>
                 </div>
                 <p className="data-value text-xl text-rose-400">{data.overall.hitSL}</p>
@@ -174,7 +174,7 @@ export default function AccuracyPage() {
                     className={`flex items-center gap-4 px-4 py-3 ${i < data.bySymbol.length - 1 ? 'border-b border-white/[0.04]' : ''}`}
                   >
                     <div className="flex items-center gap-2 w-28">
-                      <Zap size={10} className="text-emerald-500 shrink-0" />
+                      <Lightning size={10} className="text-emerald-500 shrink-0" />
                       <span className="text-xs font-semibold font-mono">{s.symbol}</span>
                     </div>
                     <div className="flex-1">

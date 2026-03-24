@@ -5,7 +5,7 @@ import { useIndicators } from '../hooks/useIndicators'
 import { fmt } from '../data/mockSignals'
 import type { AllIndicators, BollingerBands, StochasticResult } from '../lib/technicalAnalysis'
 import { motion } from 'framer-motion'
-import { ChevronDown } from 'lucide-react'
+import { CaretDown } from '@phosphor-icons/react'
 
 interface IndicatorsPanelProps {
   symbol: string

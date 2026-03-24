@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Rss, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react'
+import { Rss, TrendUp, TrendDown, ArrowsClockwise } from '@phosphor-icons/react'
 
 interface Signal {
   id: string
@@ -142,7 +142,7 @@ export default function FeedClient() {
               onClick={() => { setLoading(true); fetchFeed(filter) }}
               className="flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[11px] font-medium text-zinc-400 transition-all hover:bg-white/[0.06] hover:text-white"
             >
-              <RefreshCw size={11} />
+              <ArrowsClockwise size={11} />
               Refresh
             </button>
           </div>
@@ -188,8 +188,8 @@ export default function FeedClient() {
                 <div className="mb-3 flex items-center gap-3">
                   <div className={`flex items-center gap-1.5 text-lg font-bold ${signal.direction === 'BUY' ? 'text-emerald-400' : 'text-red-400'}`}>
                     {signal.direction === 'BUY'
-                      ? <TrendingUp size={18} />
-                      : <TrendingDown size={18} />}
+                      ? <TrendUp size={18} />
+                      : <TrendDown size={18} />}
                     {signal.direction}
                   </div>
                   <div className="flex items-center gap-1">

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, Circle, ChevronUp, ChevronDown, X } from 'lucide-react'
+import { CheckCircle, Circle, CaretUp, CaretDown, X } from '@phosphor-icons/react'
 
 const ITEMS = [
   { id: 'signal', label: 'View a Signal', hint: 'Check the signal panel' },
@@ -101,9 +101,9 @@ export default function OnboardingChecklist() {
               <X size={12} />
             </button>
             {collapsed ? (
-              <ChevronUp size={12} className="text-zinc-500" aria-hidden="true" />
+              <CaretUp size={12} className="text-zinc-500" aria-hidden="true" />
             ) : (
-              <ChevronDown size={12} className="text-zinc-500" aria-hidden="true" />
+              <CaretDown size={12} className="text-zinc-500" aria-hidden="true" />
             )}
           </div>
         </button>
@@ -139,7 +139,7 @@ export default function OnboardingChecklist() {
                       className="flex items-start gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-white/[0.04]"
                     >
                       {isDone ? (
-                        <CheckCircle2
+                        <CheckCircle
                           size={14}
                           className="mt-0.5 flex-shrink-0 text-emerald-500"
                           aria-hidden="true"

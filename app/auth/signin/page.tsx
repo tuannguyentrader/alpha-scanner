@@ -4,7 +4,7 @@ import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Zap, ArrowLeft } from 'lucide-react'
+import { Lightning, ArrowLeft } from '@phosphor-icons/react'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -39,7 +39,7 @@ export default function SignInPage() {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2 text-white mb-6 hover:opacity-80 transition-opacity">
-            <Zap size={24} className="text-emerald-500" />
+            <Lightning size={24} className="text-emerald-500" />
             <span className="text-xl font-bold">Alpha Scanner</span>
           </Link>
           <h1 className="text-lg font-semibold text-white mt-4">Sign in to your account</h1>

@@ -299,8 +299,8 @@ export default function DashboardPage() {
             </ErrorBoundary>
             </div>
 
-            {/* Webhook settings */}
-            <ErrorBoundary fallbackTitle="Webhook error">
+            {/* Plugs settings */}
+            <ErrorBoundary fallbackTitle="Plugs error">
               <Suspense fallback={<div className="h-10 rounded bg-white/[0.03] animate-pulse" />}>
                 <WebhookSettings />
               </Suspense>
