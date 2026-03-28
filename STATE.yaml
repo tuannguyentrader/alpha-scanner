@@ -317,8 +317,34 @@ tasks:
     notes: "Landing page — dedicated marketing landing page at root / (separate from /dashboard). Hero: headline + animated signal card demo. Features grid: 6 feature cards with icons. Social proof: signal accuracy stats from DB. Pricing section: Free vs Pro tiers. Footer with links. SEO optimised. Converts visitors to signups."
     output: "LandingPage.tsx (use client) with Hero (text-gradient-emerald headline, animated mock signal card with float, 2 CTAs), Features grid (6 glass cards, stagger useInView animation), Stats section (4 animated counters from /api/accuracy with fallback), Pricing (Free vs Pro glass cards, emerald Pro border, Coming Soon badge), Footer (6 links + copyright). Dashboard moved to /dashboard/page.tsx. Navbar updated with Home link. OG metadata via generateMetadata. Commit 0fbbb01."
 
+  # Phase 11 — Alpha Screener SaaS Launch
+  - id: TASK-061
+    status: in_progress
+    owner: pm-agent
+    notes: "Stripe billing — real subscription tiers (Free/Pro/Elite). Free: 3 signals/day, 5 assets. Pro ($29/mo): unlimited signals, all assets, Telegram alerts, API access. Elite ($79/mo): everything + priority support + white-label. Stripe Checkout + webhooks + billing portal. Gate features by plan. /pricing page with annual discount toggle. Use ~/.claude/skills/api-design/SKILL.md + /security-scan before commit."
+
+  - id: TASK-062
+    status: pending
+    owner: pm-agent
+    notes: "User dashboard upgrade — replace localStorage-only state with full DB persistence for logged-in users. Sync: watchlist, risk profile, leverage/capital settings, Telegram config, custom alert rules, strategy templates. Show sync status indicator. Guest mode still works (localStorage). Migration: on first login, offer to import localStorage data to DB."
+
+  - id: TASK-063
+    status: pending
+    owner: pm-agent
+    notes: "Signal marketplace — users can publish custom signal strategies for sale. StrategyListing model (authorId, name, description, price, indicators config, backtest results). Buyers unlock the strategy config. /marketplace page with listing cards, win rate displayed, Stripe one-time purchase. 15% platform fee. Seller dashboard at /marketplace/my."
+
+  - id: TASK-064
+    status: pending
+    owner: pm-agent
+    notes: "Public accuracy leaderboard v2 — server-side, powered by real SignalRecord DB data. Show: top 10 strategies by 30-day win rate, best asset/mode combos, your rank vs community. Weekly digest email to Pro users showing their accuracy vs top performers. Shareable leaderboard card (OG image per user)."
+
+  - id: TASK-065
+    status: pending
+    owner: pm-agent
+    notes: "Mobile PWA hardening + push notifications — VAPID keys, web-push subscription flow, notification triggers: new BUY/SELL signal on watched asset, TP1 hit, SL hit, daily accuracy report. Settings page to configure per-notification-type toggles. Test on iOS Safari + Android Chrome. Badge count on PWA icon."
+
 next_actions:
-  - "Phase 10 defined: 5 tasks (TASK-056 to TASK-060). Start with TASK-056."
+  - "Phase 11 defined: 5 tasks (TASK-061 to TASK-065). Start with TASK-061."
 
 approval_pending: false
 pending_commit_summary: null

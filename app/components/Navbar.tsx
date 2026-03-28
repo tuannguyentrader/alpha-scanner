@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { List, X, Lightning, ChartBar, Trophy, Radio, Crosshair, Rss, Key, Play, House } from '@phosphor-icons/react'
+import { List, X, Lightning, ChartBar, Trophy, Radio, Crosshair, Rss, Key, Play, House, CurrencyDollar } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import UserMenu from './UserMenu'
+import { usePlan } from '@/app/hooks/usePlan'
 
 interface NavbarProps {
   onMenuToggle?: () => void
@@ -11,6 +12,8 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onMenuToggle = () => {}, sidebarOpen = false }: NavbarProps) {
+  const { plan, isPro, isElite } = usePlan()
+
   return (
     <header className="sticky top-0 z-50 px-3 pt-3 pb-1">
       {/* Floating glass pill navbar */}
@@ -116,8 +119,27 @@ export default function Navbar({ onMenuToggle = () => {}, sidebarOpen = false }:
               <Key size={13} />
               API Keys
             </Link>
+            <Link
+              href="/pricing"
+              className="hidden rounded-full px-3 py-1.5 text-[11px] font-medium text-zinc-500 transition-all hover:bg-white/[0.05] hover:text-zinc-300 sm:flex items-center gap-1.5"
+            >
+              <CurrencyDollar size={13} />
+              Pricing
+            </Link>
 
             <div className="mx-1 hidden h-3 w-px bg-white/[0.06] sm:block" aria-hidden="true" />
+
+            {/* Plan badge */}
+            {isPro && !isElite && (
+              <div className="hidden sm:flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5">
+                <span className="text-[10px] font-bold text-emerald-400 tracking-wider">PRO</span>
+              </div>
+            )}
+            {isElite && (
+              <div className="hidden sm:flex items-center gap-1 rounded-full border border-purple-500/20 bg-purple-500/10 px-2 py-0.5">
+                <span className="text-[10px] font-bold text-purple-400 tracking-wider">ELITE</span>
+              </div>
+            )}
 
             {/* Live badge */}
             <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-2 py-1">

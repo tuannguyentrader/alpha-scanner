@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { getIronSession } from 'iron-session'
 import { fetchHistory } from '@/app/api/history/route'
 import { runBacktest, type BacktestResult } from '@/app/lib/backtestEngine'
 import { checkRateLimit } from '@/app/lib/apiGuard'
 import { getAllSymbols } from '@/app/lib/symbols'
+import { isPro } from '@/app/lib/planLimits'
+import { sessionOptions, type SessionData } from '@/app/lib/session'
 import type { TradingMode, RiskProfile } from '@/app/data/mockSignals'
 
 /* ── Cache ─────────────────────────────────────────────────────────────────── */
@@ -19,6 +23,22 @@ const VALID_RISKS: RiskProfile[] = ['conservative', 'balanced', 'high-risk']
 export async function GET(request: Request): Promise<Response> {
   const rateLimitResponse = checkRateLimit(request)
   if (rateLimitResponse) return rateLimitResponse
+
+  // Plan gate: Pro+ only for logged-in users
+  try {
+    const session = await getIronSession<SessionData>(await cookies(), sessionOptions)
+    if (session.isLoggedIn && session.userId) {
+      const pro = await isPro(session.userId)
+      if (!pro) {
+        return NextResponse.json(
+          { error: 'Backtesting requires a Pro plan. Upgrade at /pricing' },
+          { status: 403 },
+        )
+      }
+    }
+  } catch {
+    // Session read failed — allow request (guest mode)
+  }
 
   const { searchParams } = new URL(request.url)
   const symbol = searchParams.get('symbol')?.toUpperCase()

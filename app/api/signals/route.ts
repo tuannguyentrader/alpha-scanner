@@ -6,6 +6,10 @@ import { checkRateLimit } from '@/app/lib/apiGuard'
 import { prisma } from '@/app/lib/prisma'
 import { dispatchWebhooks } from '@/app/lib/webhookDispatcher'
 import { validateApiKey } from '@/app/lib/apiKeyAuth'
+import { checkSignalLimit, checkAssetAccess } from '@/app/lib/planLimits'
+import { getIronSession } from 'iron-session'
+import { cookies } from 'next/headers'
+import { SessionData, sessionOptions } from '@/app/lib/session'
 import type { TradingMode, RiskProfile } from '@/app/data/mockSignals'
 import type { GeneratedSignal } from '@/app/lib/signalEngine'
 
@@ -61,6 +65,23 @@ export async function GET(request: NextRequest): Promise<Response> {
   }
   if (!risk || !VALID_RISKS.includes(risk)) {
     return NextResponse.json({ error: 'Invalid risk' }, { status: 400 })
+  }
+
+  // Plan-based limits (only when user is logged in)
+  try {
+    const session = await getIronSession<SessionData>(await cookies(), sessionOptions)
+    if (session.isLoggedIn && session.userId) {
+      const assetAllowed = await checkAssetAccess(session.userId, symbol)
+      if (!assetAllowed) {
+        return NextResponse.json({ error: 'Upgrade to Pro to access this asset' }, { status: 403 })
+      }
+      const { allowed, remaining } = await checkSignalLimit(session.userId)
+      if (!allowed) {
+        return NextResponse.json({ error: 'Daily signal limit reached. Upgrade to Pro for unlimited signals.', remaining: 0 }, { status: 403 })
+      }
+    }
+  } catch {
+    // Session read failed — allow request (public access)
   }
 
   const cacheKey = `${symbol}:${mode}:${risk}`

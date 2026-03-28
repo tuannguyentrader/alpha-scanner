@@ -18,6 +18,21 @@ model User {
   settings     UserSettings?
   strategies   StrategyTemplate[]
   apiKeys      ApiKey[]
+  subscription Subscription?
+}
+
+model Subscription {
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeCustomerId      String?   @unique
+  stripeSubscriptionId  String?   @unique
+  plan                  String    @default("free") // free, pro, elite
+  status                String    @default("active") // active, canceled, past_due
+  currentPeriodEnd      DateTime?
+  cancelAtPeriodEnd     Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 }
 
 model ApiKey {

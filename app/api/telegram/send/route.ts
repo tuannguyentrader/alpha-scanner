@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { getIronSession } from 'iron-session'
 import { checkRateLimit } from '@/app/lib/apiGuard'
+import { isPro } from '@/app/lib/planLimits'
+import { sessionOptions, type SessionData } from '@/app/lib/session'
 
 interface TelegramSendBody {
   botToken: string
@@ -10,6 +14,22 @@ interface TelegramSendBody {
 export async function POST(request: Request): Promise<Response> {
   const rateLimitResponse = checkRateLimit(request)
   if (rateLimitResponse) return rateLimitResponse
+
+  // Plan gate: Pro+ only for logged-in users
+  try {
+    const session = await getIronSession<SessionData>(await cookies(), sessionOptions)
+    if (session.isLoggedIn && session.userId) {
+      const pro = await isPro(session.userId)
+      if (!pro) {
+        return NextResponse.json(
+          { error: 'Telegram alerts require a Pro plan. Upgrade at /pricing' },
+          { status: 403 },
+        )
+      }
+    }
+  } catch {
+    // Session read failed — allow request (guest mode)
+  }
 
   try {
     const body = (await request.json()) as TelegramSendBody

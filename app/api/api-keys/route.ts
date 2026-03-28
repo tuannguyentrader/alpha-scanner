@@ -37,12 +37,21 @@ export async function GET() {
   )
 }
 
-// POST /api/api-keys — create a new API key
+// POST /api/api-keys — create a new API key (Pro+ only)
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions)
   const userId = (session?.user as { id?: string } | undefined)?.id
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { isPro: proCheck } = await import('@/app/lib/planLimits')
+  const pro = await proCheck(userId)
+  if (!pro) {
+    return NextResponse.json(
+      { error: 'API key creation requires a Pro plan. Upgrade at /pricing' },
+      { status: 403 },
+    )
   }
 
   const body = await request.json().catch(() => ({}))

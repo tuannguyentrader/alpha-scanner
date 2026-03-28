@@ -3,6 +3,10 @@ import { fetchHistory } from '@/app/api/history/route'
 import { computeAllIndicators, type AllIndicators } from '@/app/lib/technicalAnalysis'
 import { checkRateLimit } from '@/app/lib/apiGuard'
 import { validateApiKey } from '@/app/lib/apiKeyAuth'
+import { checkAssetAccess } from '@/app/lib/planLimits'
+import { getIronSession } from 'iron-session'
+import { cookies } from 'next/headers'
+import { SessionData, sessionOptions } from '@/app/lib/session'
 
 export interface IndicatorsResponse {
   symbol: string
@@ -57,6 +61,19 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   if (!symbol || !VALID_SYMBOLS.includes(symbol)) {
     return NextResponse.json({ error: 'Invalid symbol' }, { status: 400 })
+  }
+
+  // Plan-based asset access check
+  try {
+    const session = await getIronSession<SessionData>(await cookies(), sessionOptions)
+    if (session.isLoggedIn && session.userId) {
+      const allowed = await checkAssetAccess(session.userId, symbol)
+      if (!allowed) {
+        return NextResponse.json({ error: 'Upgrade to Pro to access this asset' }, { status: 403 })
+      }
+    }
+  } catch {
+    // Session read failed — allow request
   }
 
   try {

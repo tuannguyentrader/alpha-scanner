@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getIronSession } from "iron-session";
 import { prisma } from "@/app/lib/prisma";
 import { z } from "zod";
+import { isElite } from "@/app/lib/planLimits";
+import { sessionOptions, type SessionData } from "@/app/lib/session";
 
 const sessionSchema = z.object({
   symbol: z.string().min(1),
@@ -12,6 +16,22 @@ const sessionSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
+  // Plan gate: Elite only for logged-in users
+  try {
+    const session = await getIronSession<SessionData>(await cookies(), sessionOptions);
+    if (session.isLoggedIn && session.userId) {
+      const elite = await isElite(session.userId);
+      if (!elite) {
+        return NextResponse.json(
+          { error: "Trading sessions require an Elite plan. Upgrade at /pricing" },
+          { status: 403 },
+        );
+      }
+    }
+  } catch {
+    // Session read failed — allow request (guest mode)
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -38,6 +58,22 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Plan gate: Elite only for logged-in users
+  try {
+    const session = await getIronSession<SessionData>(await cookies(), sessionOptions);
+    if (session.isLoggedIn && session.userId) {
+      const elite = await isElite(session.userId);
+      if (!elite) {
+        return NextResponse.json(
+          { error: "Trading sessions require an Elite plan. Upgrade at /pricing" },
+          { status: 403 },
+        );
+      }
+    }
+  } catch {
+    // Session read failed — allow request (guest mode)
+  }
+
   try {
     const body = await request.json();
     const validated = sessionSchema.parse(body);

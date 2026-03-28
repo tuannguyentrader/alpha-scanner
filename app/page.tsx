@@ -3,13 +3,13 @@ import LandingPage from './components/LandingPage'
 import { prisma } from './lib/prisma'
 
 export const metadata: Metadata = {
-  title: 'Alpha Scanner — AI Trading Signals',
+  title: 'Alpha Screener — Stop Paying $2,340/Year to Scan Markets',
   description:
-    'Real-time AI-powered trading signals across Crypto, Forex & Metals. 6-factor signal engine with RSI, MACD, EMA, Bollinger Bands & more.',
+    'AI-powered trading signals across forex, crypto, metals, and indices. Real-time scanning. Zero subscriptions. Free tier forever. Powered by TradeClaw.',
   openGraph: {
-    title: 'Alpha Scanner — AI Trading Signals',
+    title: 'Alpha Screener — Stop Paying $2,340/Year to Scan Markets',
     description:
-      'Real-time technical analysis across Crypto, Forex & Metals — powered by a 6-factor signal engine.',
+      'AI-powered trading signals across forex, crypto, metals, and indices. Real-time scanning. Zero subscriptions. Free tier forever.',
     type: 'website',
   },
 }

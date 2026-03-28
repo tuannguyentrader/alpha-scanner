@@ -29,6 +29,7 @@ import { useCommentary } from '../hooks/useCommentary'
 import SignalCommentary from '../components/SignalCommentary'
 import OnboardingTour from '../components/OnboardingTour'
 import OnboardingChecklist from '../components/OnboardingChecklist'
+import UpgradeGate from '../components/UpgradeGate'
 
 // Lazy-loaded heavy panels
 const PriceChart = lazy(() => import('../components/PriceChart'))
@@ -262,6 +263,7 @@ export default function DashboardPage() {
 
             {/* Broker connection */}
             <div data-tour-step="broker">
+            <UpgradeGate requiredPlan="elite" featureName="Broker Integration">
             <BrokerConnect
               state={broker.state}
               account={broker.account}
@@ -269,6 +271,7 @@ export default function DashboardPage() {
               onConnect={broker.connect}
               onDisconnect={broker.disconnect}
             />
+            </UpgradeGate>
             </div>
 
             {/* Custom alert rules */}
@@ -285,6 +288,7 @@ export default function DashboardPage() {
 
             {/* Telegram alerts */}
             <div data-tour-step="alerts">
+            <UpgradeGate requiredPlan="pro" featureName="Telegram Alerts">
             <ErrorBoundary fallbackTitle="Telegram error">
               <Suspense fallback={<div className="h-10 rounded bg-white/[0.03] animate-pulse" />}>
                 <TelegramSettings
@@ -297,14 +301,17 @@ export default function DashboardPage() {
                 />
               </Suspense>
             </ErrorBoundary>
+            </UpgradeGate>
             </div>
 
             {/* Plugs settings */}
+            <UpgradeGate requiredPlan="pro" featureName="Webhook Configuration">
             <ErrorBoundary fallbackTitle="Plugs error">
               <Suspense fallback={<div className="h-10 rounded bg-white/[0.03] animate-pulse" />}>
                 <WebhookSettings />
               </Suspense>
             </ErrorBoundary>
+            </UpgradeGate>
           </div>
         </aside>
 

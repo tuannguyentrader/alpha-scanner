@@ -273,29 +273,35 @@ export default function LandingPage({ stats }: { stats: LandingStats }) {
             className="relative z-10 md:col-span-3 flex flex-col gap-5"
           >
             <span className="self-start text-[11px] font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-full px-3 py-1 tracking-wider uppercase">
-              Real-Time · Multi-Asset · AI-Powered
+              Forex · Crypto · Metals · Indices
             </span>
 
             <h1 className="text-4xl md:text-6xl font-black leading-none tracking-tighter text-white">
-              <span className="text-gradient-emerald">Professional</span>{' '}
-              Trading Signals
+              Stop Paying{' '}
+              <span className="text-gradient-emerald">$2,340/Year</span>{' '}
+              to Scan Markets
             </h1>
 
             <p className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed">
-              Real-time technical analysis for{' '}
-              <span className="text-zinc-200">XAUUSD, BTC, and 12 other instruments</span>.
-              RSI, MACD, EMA, Fibonacci TP/SL — powered by a{' '}
-              <span className="text-blue-400">6-factor signal engine</span>.
+              AI-powered trading signals across{' '}
+              <span className="text-zinc-200">forex, crypto, metals, and indices</span>.
+              Real-time scanning. Zero subscriptions.{' '}
+              <span className="text-blue-400">Free tier forever.</span>
+            </p>
+
+            <p className="text-xs text-zinc-600">
+              Powered by TradeClaw — the open-source trading engine
             </p>
 
             <div className="flex flex-wrap gap-3 mt-1">
               <Link href="/dashboard"
                 className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.03] active:scale-[0.98]">
-                Launch Dashboard
+                Start Scanning Free →
               </Link>
-              <Link href="/demo"
+              <Link href="https://github.com/naimkatiman/alpha-scanner"
+                target="_blank" rel="noopener noreferrer"
                 className="px-6 py-3 rounded-xl border border-blue-500/30 text-blue-400 font-bold text-sm transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-blue-500/10 hover:border-blue-500/50">
-                Try Demo
+                View on GitHub ⭐
               </Link>
             </div>
           </motion.div>

@@ -1,11 +1,36 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { getIronSession } from 'iron-session'
 import { prisma } from '@/app/lib/prisma'
 import { checkRateLimit } from '@/app/lib/apiGuard'
+import { isPro } from '@/app/lib/planLimits'
+import { sessionOptions, type SessionData } from '@/app/lib/session'
+
+async function checkProGate(): Promise<Response | null> {
+  try {
+    const session = await getIronSession<SessionData>(await cookies(), sessionOptions)
+    if (session.isLoggedIn && session.userId) {
+      const pro = await isPro(session.userId)
+      if (!pro) {
+        return NextResponse.json(
+          { error: 'Webhook configuration requires a Pro plan. Upgrade at /pricing' },
+          { status: 403 },
+        )
+      }
+    }
+  } catch {
+    // Session read failed — allow request (guest mode)
+  }
+  return null
+}
 
 // GET — list all webhook configs
 export async function GET(request: Request): Promise<Response> {
   const rateLimitResponse = checkRateLimit(request)
   if (rateLimitResponse) return rateLimitResponse
+
+  const gateResponse = await checkProGate()
+  if (gateResponse) return gateResponse
 
   const webhooks = await prisma.webhookConfig.findMany({
     orderBy: { createdAt: 'desc' },
@@ -18,6 +43,9 @@ export async function GET(request: Request): Promise<Response> {
 export async function POST(request: Request): Promise<Response> {
   const rateLimitResponse = checkRateLimit(request)
   if (rateLimitResponse) return rateLimitResponse
+
+  const gateResponse = await checkProGate()
+  if (gateResponse) return gateResponse
 
   try {
     const { url, secret } = await request.json()
@@ -46,6 +74,9 @@ export async function POST(request: Request): Promise<Response> {
 export async function PUT(request: Request): Promise<Response> {
   const rateLimitResponse = checkRateLimit(request)
   if (rateLimitResponse) return rateLimitResponse
+
+  const gateResponsePut = await checkProGate()
+  if (gateResponsePut) return gateResponsePut
 
   try {
     const { id, url, enabled } = await request.json()
@@ -76,6 +107,9 @@ export async function PUT(request: Request): Promise<Response> {
 export async function DELETE(request: Request): Promise<Response> {
   const rateLimitResponse = checkRateLimit(request)
   if (rateLimitResponse) return rateLimitResponse
+
+  const gateResponseDel = await checkProGate()
+  if (gateResponseDel) return gateResponseDel
 
   try {
     const { id } = await request.json()
