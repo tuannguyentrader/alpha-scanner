@@ -81,8 +81,11 @@ export async function POST(request: NextRequest) {
   const body = await request.json()
   const { name, description, price, indicatorsConfig, backtestResults, assetType, isPublished } = body
 
-  if (!name || typeof name !== 'string' || name.trim().length === 0) {
-    return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+  if (!name || typeof name !== 'string' || name.trim().length === 0 || name.trim().length > 200) {
+    return NextResponse.json({ error: 'Name is required (max 200 chars)' }, { status: 400 })
+  }
+  if (typeof description === 'string' && description.length > 5000) {
+    return NextResponse.json({ error: 'Description too long (max 5000 chars)' }, { status: 400 })
   }
   if (typeof price !== 'number' || price < 0.99) {
     return NextResponse.json({ error: 'Price must be at least $0.99' }, { status: 400 })
@@ -91,18 +94,36 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Indicators config is required' }, { status: 400 })
   }
 
+  const VALID_ASSET_TYPES = ['crypto', 'forex', 'stocks', 'futures']
+  const validatedAssetType = VALID_ASSET_TYPES.includes(assetType) ? assetType : 'crypto'
+
+  const configStr = typeof indicatorsConfig === 'string' ? indicatorsConfig : JSON.stringify(indicatorsConfig)
+  const backtestStr = backtestResults ? (typeof backtestResults === 'string' ? backtestResults : JSON.stringify(backtestResults)) : '{}'
+
+  if (configStr.length > 50000 || backtestStr.length > 50000) {
+    return NextResponse.json({ error: 'Config or backtest data too large' }, { status: 400 })
+  }
+
   const listing = await prisma.strategyListing.create({
     data: {
       authorId: session.userId,
       name: name.trim(),
       description: typeof description === 'string' ? description.trim() : '',
       price,
-      indicatorsConfig: typeof indicatorsConfig === 'string' ? indicatorsConfig : JSON.stringify(indicatorsConfig),
-      backtestResults: backtestResults ? (typeof backtestResults === 'string' ? backtestResults : JSON.stringify(backtestResults)) : '{}',
-      assetType: assetType || 'crypto',
+      indicatorsConfig: configStr,
+      backtestResults: backtestStr,
+      assetType: validatedAssetType,
       isPublished: isPublished ?? false,
     },
   })
 
-  return NextResponse.json(listing, { status: 201 })
+  return NextResponse.json({
+    id: listing.id,
+    name: listing.name,
+    description: listing.description,
+    price: listing.price,
+    assetType: listing.assetType,
+    isPublished: listing.isPublished,
+    createdAt: listing.createdAt,
+  }, { status: 201 })
 }

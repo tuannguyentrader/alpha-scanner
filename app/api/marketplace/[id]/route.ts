@@ -97,11 +97,26 @@ export async function PUT(request: NextRequest, { params }: Params) {
       ? body.backtestResults
       : JSON.stringify(body.backtestResults)
   }
-  if (body.assetType !== undefined) data.assetType = String(body.assetType)
+  if (body.assetType !== undefined) {
+    const VALID_ASSET_TYPES = ['crypto', 'forex', 'stocks', 'futures']
+    if (!VALID_ASSET_TYPES.includes(body.assetType)) {
+      return NextResponse.json({ error: 'Invalid assetType' }, { status: 400 })
+    }
+    data.assetType = body.assetType
+  }
   if (body.isPublished !== undefined) data.isPublished = Boolean(body.isPublished)
 
   const updated = await prisma.strategyListing.update({ where: { id }, data })
-  return NextResponse.json(updated)
+  return NextResponse.json({
+    id: updated.id,
+    name: updated.name,
+    description: updated.description,
+    price: updated.price,
+    assetType: updated.assetType,
+    isPublished: updated.isPublished,
+    createdAt: updated.createdAt,
+    updatedAt: updated.updatedAt,
+  })
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {

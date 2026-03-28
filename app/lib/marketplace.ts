@@ -14,7 +14,7 @@ export async function getUserPurchases(userId: string) {
     where: { buyerId: userId },
     include: {
       listing: {
-        include: { author: { select: { name: true, email: true } } },
+        include: { author: { select: { name: true } } },
       },
     },
     orderBy: { purchasedAt: 'desc' },

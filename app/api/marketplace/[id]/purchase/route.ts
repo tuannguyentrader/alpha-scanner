@@ -57,7 +57,11 @@ export async function POST(request: NextRequest, { params }: Params) {
     })
   }
 
-  const origin = request.headers.get('origin') || 'http://localhost:3000'
+  const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',')
+  const requestOrigin = request.headers.get('origin') || ''
+  const origin = allowedOrigins.includes(requestOrigin)
+    ? requestOrigin
+    : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   const platformFee = Math.round(listing.price * 100 * 0.15)
 
   const checkoutSession = await getStripe().checkout.sessions.create({
@@ -85,6 +89,8 @@ export async function POST(request: NextRequest, { params }: Params) {
     },
     success_url: `${origin}/marketplace?purchased=${id}`,
     cancel_url: `${origin}/marketplace`,
+  }, {
+    idempotencyKey: `marketplace-${session.userId}-${id}`,
   })
 
   return NextResponse.json({ url: checkoutSession.url })

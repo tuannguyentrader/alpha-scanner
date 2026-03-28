@@ -337,9 +337,10 @@ tasks:
     output: "StrategyListing + StrategyPurchase Prisma models (authorId FK, price, indicatorsConfig JSON, backtestResults JSON, isPublished, assetType, unique buyer+listing constraint). /api/marketplace GET (list published with purchase counts) + POST (create listing, auth required). /api/marketplace/[id] GET/PUT/DELETE (owner-only edits). /api/marketplace/[id]/purchase POST (Stripe payment intent, 15% platform fee). /api/marketplace/earnings GET + /api/marketplace/purchases GET. /marketplace page (glass card grid, price/winRate/newest sort, asset type filter). /marketplace/my page (seller dashboard: my listings CRUD, earnings with 85% revenue, purchases made). Navbar Marketplace link. marketplace.ts helper lib. Clean build."
 
   - id: TASK-064
-    status: pending
+    status: done
     owner: pm-agent
     notes: "Public accuracy leaderboard v2 — server-side, powered by real SignalRecord DB data. Show: top 10 strategies by 30-day win rate, best asset/mode combos, your rank vs community. Weekly digest email to Pro users showing their accuracy vs top performers. Shareable leaderboard card (OG image per user)."
+    output: "/api/leaderboard/v2 (top 10 strategies by 30d win rate, 7d/30d/all leaderboards, best combos with weighted scoring, summary stats, 30s cache). /api/leaderboard/v2/rank (authenticated user rank vs community avg, percentile, from UserSettings signalHistory). /api/leaderboard/digest (weekly digest data for Pro users, top 3 performers, TODO email integration). /api/og/leaderboard/[symbol] (dynamic OG image via next/og with win rate/signals/rank/confidence stats). Leaderboard component v2 (7d/30d/all tabs, summary cards, best combos grid with crown for #1, Your Rank card with percentile, strategy table with confidence+streak columns, glass theme). page.tsx generateMetadata with dynamic OG per ?symbol= param. Clean build."
 
   - id: TASK-065
     status: pending

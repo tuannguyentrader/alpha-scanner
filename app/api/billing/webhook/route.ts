@@ -41,18 +41,27 @@ export async function POST(request: NextRequest) {
 
       // Handle marketplace one-time purchase
       if (session.metadata?.type === 'marketplace_purchase') {
+        if (session.payment_status !== 'paid') break
+
         const { listingId, buyerId } = session.metadata
-        if (listingId && buyerId) {
-          await prisma.strategyPurchase.upsert({
-            where: { buyerId_listingId: { buyerId, listingId } },
-            create: {
-              buyerId,
-              listingId,
-              stripePaymentIntentId: (session.payment_intent as string) ?? session.id,
-            },
-            update: {},
-          })
-        }
+        if (!listingId || !buyerId) break
+
+        // Cross-check that listing and buyer still exist
+        const [listing, buyer] = await Promise.all([
+          prisma.strategyListing.findUnique({ where: { id: listingId } }),
+          prisma.user.findUnique({ where: { id: buyerId } }),
+        ])
+        if (!listing || !buyer) break
+
+        await prisma.strategyPurchase.upsert({
+          where: { buyerId_listingId: { buyerId, listingId } },
+          create: {
+            buyerId,
+            listingId,
+            stripePaymentIntentId: (session.payment_intent as string) ?? session.id,
+          },
+          update: {},
+        })
         break
       }
 
