@@ -19,6 +19,8 @@ model User {
   strategies   StrategyTemplate[]
   apiKeys      ApiKey[]
   subscription Subscription?
+  strategyListings  StrategyListing[]  @relation("StrategyListings")
+  strategyPurchases StrategyPurchase[] @relation("StrategyPurchases")
 }
 
 model Subscription {
@@ -221,4 +223,38 @@ model UserPreference {
   soundAlerts       Boolean @default(true)
   chartType         String  @default("candlestick")
   language          String  @default("en")
+}
+
+model StrategyListing {
+  id               String   @id @default(cuid())
+  authorId         String
+  author           User     @relation("StrategyListings", fields: [authorId], references: [id], onDelete: Cascade)
+  name             String
+  description      String   @default("")
+  price            Float
+  indicatorsConfig String
+  backtestResults  String   @default("{}")
+  isPublished      Boolean  @default(false)
+  assetType        String   @default("crypto")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  purchases        StrategyPurchase[]
+
+  @@index([authorId])
+  @@index([isPublished])
+  @@index([price])
+}
+
+model StrategyPurchase {
+  id                    String          @id @default(cuid())
+  buyerId               String
+  buyer                 User            @relation("StrategyPurchases", fields: [buyerId], references: [id], onDelete: Cascade)
+  listingId             String
+  listing               StrategyListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  stripePaymentIntentId String
+  purchasedAt           DateTime        @default(now())
+
+  @@unique([buyerId, listingId])
+  @@index([buyerId])
+  @@index([listingId])
 }

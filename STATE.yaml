@@ -325,14 +325,16 @@ tasks:
     output: "Complete Stripe billing: server-side plan gating on 6 API routes (backtest/telegram/webhook Pro+, broker/trading-sessions Elite), UpgradeGate client component (glass overlay + Phosphor Lock + /pricing CTA), dashboard components wrapped (BrokerConnect elite, TelegramSettings/WebhookSettings pro), .env.example with all Stripe vars. Subscription Prisma model, Stripe checkout/portal/webhook/status routes, planLimits.ts (3 signals/day free, 5 assets free), usePlan hook. Commit d442e8d."
 
   - id: TASK-062
-    status: in_progress
+    status: done
     owner: pm-agent
     notes: "User dashboard upgrade — replace localStorage-only state with full DB persistence for logged-in users. Sync: watchlist, risk profile, leverage/capital settings, Telegram config, custom alert rules, strategy templates. Show sync status indicator. Guest mode still works (localStorage). Migration: on first login, offer to import localStorage data to DB."
+    output: "Full DB persistence for logged-in users. useSettingsSync hook (debounced 800ms writes to /api/settings PUT, optimistic updates, batch sync). SettingsSyncProvider wraps app. All 6 data hooks (useAlerts, usePaperTrading, useSignalHistory, usePerformanceAnalytics, useTelegram, useCustomAlerts) hydrate from serverData and sync changes back. Dashboard page wires selectedMode/selectedRisk/leverage/capital/symbol to DB via synced handlers. URL params override DB values. SyncStatusIndicator in Navbar (synced/syncing/error/offline). LocalStorageMigration component (import prompt on first login, batch sync). Guest mode unchanged (localStorage). Commit feadaea."
 
   - id: TASK-063
-    status: pending
+    status: done
     owner: pm-agent
     notes: "Signal marketplace — users can publish custom signal strategies for sale. StrategyListing model (authorId, name, description, price, indicators config, backtest results). Buyers unlock the strategy config. /marketplace page with listing cards, win rate displayed, Stripe one-time purchase. 15% platform fee. Seller dashboard at /marketplace/my."
+    output: "StrategyListing + StrategyPurchase Prisma models (authorId FK, price, indicatorsConfig JSON, backtestResults JSON, isPublished, assetType, unique buyer+listing constraint). /api/marketplace GET (list published with purchase counts) + POST (create listing, auth required). /api/marketplace/[id] GET/PUT/DELETE (owner-only edits). /api/marketplace/[id]/purchase POST (Stripe payment intent, 15% platform fee). /api/marketplace/earnings GET + /api/marketplace/purchases GET. /marketplace page (glass card grid, price/winRate/newest sort, asset type filter). /marketplace/my page (seller dashboard: my listings CRUD, earnings with 85% revenue, purchases made). Navbar Marketplace link. marketplace.ts helper lib. Clean build."
 
   - id: TASK-064
     status: pending

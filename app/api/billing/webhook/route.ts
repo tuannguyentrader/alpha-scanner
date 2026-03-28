@@ -37,8 +37,26 @@ export async function POST(request: NextRequest) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session
       const userId = session.metadata?.userId
-      const subscriptionId = session.subscription as string
       const customerId = session.customer as string
+
+      // Handle marketplace one-time purchase
+      if (session.metadata?.type === 'marketplace_purchase') {
+        const { listingId, buyerId } = session.metadata
+        if (listingId && buyerId) {
+          await prisma.strategyPurchase.upsert({
+            where: { buyerId_listingId: { buyerId, listingId } },
+            create: {
+              buyerId,
+              listingId,
+              stripePaymentIntentId: (session.payment_intent as string) ?? session.id,
+            },
+            update: {},
+          })
+        }
+        break
+      }
+
+      const subscriptionId = session.subscription as string
 
       if (!userId) break
 

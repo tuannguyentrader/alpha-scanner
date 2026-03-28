@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { List, X, Lightning, ChartBar, Trophy, Radio, Crosshair, Rss, Key, Play, House, CurrencyDollar } from '@phosphor-icons/react'
+import { List, X, Lightning, ChartBar, Trophy, Radio, Crosshair, Rss, Key, Play, House, CurrencyDollar, Storefront } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import UserMenu from './UserMenu'
 import SyncStatusIndicator from './SyncStatusIndicator'
@@ -112,6 +112,13 @@ export default function Navbar({ onMenuToggle = () => {}, sidebarOpen = false }:
             >
               <Rss size={13} />
               Feed
+            </Link>
+            <Link
+              href="/marketplace"
+              className="hidden rounded-full px-3 py-1.5 text-[11px] font-medium text-zinc-500 transition-all hover:bg-white/[0.05] hover:text-zinc-300 sm:flex items-center gap-1.5"
+            >
+              <Storefront size={13} />
+              Marketplace
             </Link>
             <Link
               href="/api-keys"
