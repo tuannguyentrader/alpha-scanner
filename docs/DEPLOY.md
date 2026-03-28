@@ -167,7 +167,9 @@ DATABASE_URL=file:/app/prisma/dev.db
 The `railway.toml` already configures:
 
 - Build: `npx prisma generate && npm run build`
-- Start: `npm start`
+- Start: `sh start.sh`
+
+`start.sh` runs `prisma db push --skip-generate` at runtime, after Railway has injected your environment variables. This avoids build failures when `DATABASE_URL` is only available in the running service.
 
 Railway will build and deploy automatically on every push to `main`.
 
@@ -206,14 +208,12 @@ SQLite is configured out of the box for local development. It works on Railway w
 ### Running migrations in production
 
 ```bash
-npx prisma migrate deploy
+DATABASE_URL=your-runtime-database-url npx prisma migrate deploy
 ```
 
-Run this as part of your release process or add it to the build command:
+Run this as a release step or from a running container with the production database variables available. Do not put `prisma migrate deploy` or `prisma db push` in the Docker or Railway build phase unless the builder also has runtime database credentials.
 
-```
-npx prisma generate && npx prisma migrate deploy && npm run build
-```
+For the default Railway flow in this repo, `sh start.sh` handles `prisma db push --skip-generate` at runtime.
 
 ---
 
@@ -222,6 +222,11 @@ npx prisma generate && npx prisma migrate deploy && npm run build
 **Build fails with "Prisma Client not generated"**
 - Ensure the build command starts with `npx prisma generate`
 - Check that `prisma` is listed in `dependencies` (not `devDependencies`)
+
+**Railway build fails with `Environment variable not found: DATABASE_URL`**
+- Keep `npx prisma generate` in the build command
+- Move `prisma db push` or `prisma migrate deploy` to runtime or a release step with runtime env vars
+- Use `sh start.sh` so Railway runs schema sync after injecting `DATABASE_URL`
 
 **`NEXTAUTH_URL` mismatch errors**
 - Set `NEXTAUTH_URL` exactly to your deployment URL including protocol and no trailing slash
