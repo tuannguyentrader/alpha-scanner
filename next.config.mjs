@@ -3,7 +3,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  serverExternalPackages: ['metaapi.cloud-sdk', 'bcryptjs', '@prisma/client'],
+  serverExternalPackages: ['metaapi.cloud-sdk', 'bcryptjs', '@prisma/client', 'web-push'],
   async headers() {
     return [
       {

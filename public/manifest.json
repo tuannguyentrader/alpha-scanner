@@ -21,5 +21,37 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["finance", "utilities"]
+  "categories": ["finance", "utilities", "business"],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Alpha Scanner Dashboard"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/dashboard",
+      "description": "View live trading signals",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Leaderboard",
+      "short_name": "Leaderboard",
+      "url": "/leaderboard",
+      "description": "Signal accuracy leaderboard",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Accuracy",
+      "short_name": "Accuracy",
+      "url": "/accuracy",
+      "description": "Signal accuracy tracker",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
 }

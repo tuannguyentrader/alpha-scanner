@@ -132,6 +132,10 @@ model UserSettings {
   signalHistory    String   @default("[]")
   equitySnapshots  String   @default("[]")
   tradeRecords     String   @default("[]")
+  pushSignalAlerts Boolean  @default(true)
+  pushTpAlerts     Boolean  @default(true)
+  pushSlAlerts     Boolean  @default(true)
+  pushDailyReport  Boolean  @default(true)
   updatedAt        DateTime @updatedAt
 }
 
@@ -223,6 +227,17 @@ model UserPreference {
   soundAlerts       Boolean @default(true)
   chartType         String  @default("candlestick")
   language          String  @default("en")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String?
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model StrategyListing {

@@ -45,6 +45,7 @@ const PerformanceAnalytics = lazy(() => import('../components/PerformanceAnalyti
 const AlertRuleBuilder = lazy(() => import('../components/AlertRuleBuilder'))
 const TelegramSettings = lazy(() => import('../components/TelegramSettings'))
 const WebhookSettings = lazy(() => import('../components/WebhookSettings'))
+const PushNotificationSettings = lazy(() => import('../components/PushNotificationSettings'))
 
 // Memoized pure display components
 const MemoSignalPanel = memo(SignalPanel)
@@ -367,6 +368,13 @@ export default function DashboardPage() {
               </Suspense>
             </ErrorBoundary>
             </UpgradeGate>
+
+            {/* Push notification settings */}
+            <ErrorBoundary fallbackTitle="Push settings error">
+              <Suspense fallback={<div className="h-10 rounded bg-white/[0.03] animate-pulse" />}>
+                <PushNotificationSettings />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         </aside>
 
