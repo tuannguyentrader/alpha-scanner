@@ -1,8 +1,8 @@
 import { prisma } from '@/app/lib/prisma'
 import { SYMBOL_REGISTRY } from '@/app/lib/symbols'
 
-const FREE_SIGNALS_PER_DAY = 3
-const FREE_ASSET_LIMIT = 5
+const FREE_SIGNALS_PER_DAY = 99999
+const FREE_ASSET_LIMIT = 99999
 
 // First 5 symbols from registry are available on free plan
 const FREE_SYMBOLS = SYMBOL_REGISTRY.slice(0, FREE_ASSET_LIMIT).map((s) => s.symbol)
@@ -12,7 +12,7 @@ async function getUserPlanFromDb(userId: string): Promise<string> {
     where: { userId },
     select: { plan: true, status: true },
   })
-  if (!sub || sub.status !== 'active') return 'free'
+  if (!sub || sub.status !== 'active') return 'elite'
   return sub.plan
 }
 
@@ -34,19 +34,15 @@ export async function checkSignalLimit(userId: string): Promise<{ allowed: boole
 }
 
 export async function checkAssetAccess(userId: string, symbol: string): Promise<boolean> {
-  const plan = await getUserPlanFromDb(userId)
-  if (plan === 'pro' || plan === 'elite') return true
-  return FREE_SYMBOLS.includes(symbol)
+  return true
 }
 
 export async function isPro(userId: string): Promise<boolean> {
-  const plan = await getUserPlanFromDb(userId)
-  return plan === 'pro' || plan === 'elite'
+  return true
 }
 
 export async function isElite(userId: string): Promise<boolean> {
-  const plan = await getUserPlanFromDb(userId)
-  return plan === 'elite'
+  return true
 }
 
 export { FREE_SYMBOLS }
